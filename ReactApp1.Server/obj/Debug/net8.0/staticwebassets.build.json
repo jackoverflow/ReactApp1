@@ -1,0 +1,24 @@
+{
+  "Version": 1,
+  "Hash": "4fuNMydh/8j5YtoJwtRH4ObBeprgRhaXGqegMY9Mvmo=",
+  "Source": "ReactApp1.Server",
+  "BasePath": "_content/ReactApp1.Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\Users\\vboxuser\\source\\repos\\ReactApp1\\reactapp1.client\\reactapp1.client.csproj",
+      "Version": 2,
+      "Source": "reactapp1.client",
+      "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
+    }
+  ],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
