@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const AddStudent = () => {
     const navigate = useNavigate();
@@ -37,13 +38,34 @@ const AddStudent = () => {
                 setLastname('');
                 setBirthDate('');
                 
+                // Show success alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Student added successfully!',
+                    confirmButtonText: 'OK'
+                });
+
+                // Optionally navigate to another page
                 navigate('/students');
             } else {
                 const errorText = await response.text();
                 console.error('Failed to add student:', errorText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to add student.',
+                    confirmButtonText: 'OK'
+                });
             }
         } catch (error) {
             console.error('Error adding student:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error adding student.',
+                confirmButtonText: 'OK'
+            });
         }
     };
 
