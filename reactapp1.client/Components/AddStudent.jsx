@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { toast } from 'react-hot-toast';
 
 const AddStudent = () => {
     const navigate = useNavigate();
@@ -10,6 +10,7 @@ const AddStudent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log('Form submitted');
 
         const studentData = {
             Firstname: firstname,
@@ -17,9 +18,8 @@ const AddStudent = () => {
             BirthDate: birthDate
         };
 
-        console.log('Sending student data:', studentData);
-
         try {
+            console.log('Sending request...');
             const response = await fetch('http://localhost:5077/api/student', {
                 method: 'POST',
                 headers: {
@@ -28,44 +28,28 @@ const AddStudent = () => {
                 body: JSON.stringify(studentData),
             });
 
-            console.log('Response status:', response.status);
-
             if (response.ok) {
                 const addedStudent = await response.json();
-                console.log('Student added successfully:', addedStudent);
+                console.log('Response successful, about to show toast');
                 
+                toast.success('Student added successfully!', {
+                    duration: 4000,
+                    position: 'top-center',
+                });
+
                 setFirstname('');
                 setLastname('');
                 setBirthDate('');
                 
-                // Show success alert
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'Student added successfully!',
-                    confirmButtonText: 'OK'
-                });
-
-                // Optionally navigate to another page
                 navigate('/students');
             } else {
                 const errorText = await response.text();
-                console.error('Failed to add student:', errorText);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to add student.',
-                    confirmButtonText: 'OK'
-                });
+                console.log('Error response:', errorText);
+                toast.error('Failed to add student.');
             }
         } catch (error) {
-            console.error('Error adding student:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Error adding student.',
-                confirmButtonText: 'OK'
-            });
+            console.error('Catch error:', error);
+            toast.error('Error adding student.');
         }
     };
 

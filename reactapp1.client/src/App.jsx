@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import './App.css';
 import StudentList from '.././Components/StudentList.jsx';
 import AddStudent from '.././Components/AddStudent.jsx';
@@ -22,6 +23,7 @@ function App() {
     return (
         <Router>
             <div>
+                <Toaster position="top-center" />
                 <nav>
                     <ul>
                         <li>
