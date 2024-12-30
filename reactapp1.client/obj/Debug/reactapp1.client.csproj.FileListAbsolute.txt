@@ -1,1 +1,0 @@
-C:\Users\vboxuser\source\repos\ReactApp1\reactapp1.client\obj\Debug\reactapp1.client.csproj.CoreCompileInputs.cache
