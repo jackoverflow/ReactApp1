@@ -21,7 +21,7 @@ const StudentList = () => {
     return (
         <div>
             <h1>Student List</h1>
-            <ul>
+            <ol>
                 {students.length > 0 ? (
                     students.map(student => (
                         <li key={student.id}>{student.firstname} {student.lastname}</li>
@@ -29,7 +29,7 @@ const StudentList = () => {
                 ) : (
                     <li>No students found</li>
                 )}
-            </ul>
+            </ol>
         </div>
     );
 };
