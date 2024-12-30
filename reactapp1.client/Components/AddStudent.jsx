@@ -45,7 +45,7 @@ const AddStudent = () => {
             } else {
                 const errorText = await response.text();
                 console.log('Error response:', errorText);
-                toast.error('Failed to add student.');
+                toast.error(`Failed to add student: ${errorText}`);
             }
         } catch (error) {
             console.error('Catch error:', error);

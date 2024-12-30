@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { Link } from 'react-router-dom';
 
 const StudentList = () => {
     const [students, setStudents] = useState([]);
@@ -12,24 +14,56 @@ const StudentList = () => {
                 setStudents(response.data);
             } catch (error) {
                 console.error('Error fetching students:', error);
+                toast.error('Failed to fetch students.');
             }
         };
 
         fetchStudents();
     }, []);
 
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5077/api/Student/${id}`);
+            setStudents(students.filter(student => student.id !== id));
+            toast.success('Student deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting student:', error);
+            toast.error('Failed to delete student.');
+        }
+    };
+
     return (
         <div>
             <h1>Student List</h1>
-            <ol>
-                {students.length > 0 ? (
-                    students.map(student => (
-                        <li key={student.id}>{student.firstname} {student.lastname}</li>
-                    ))
-                ) : (
-                    <li>No students found</li>
-                )}
-            </ol>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Firstname</th>
+                        <th>Lastname</th>
+                        <th>Birth Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {students.length > 0 ? (
+                        students.map(student => (
+                            <tr key={student.id}>
+                                <td>{student.firstname}</td>
+                                <td>{student.lastname}</td>
+                                <td>{student.birthDate}</td>
+                                <td>
+                                    <Link to={`/editstudent/${student.id}`}>Edit</Link>
+                                    <button onClick={() => handleDelete(student.id)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="4">No students found</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 };

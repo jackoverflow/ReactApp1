@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import './App.css';
 import StudentList from '.././Components/StudentList.jsx';
 import AddStudent from '.././Components/AddStudent.jsx';
+import EditStudent from '.././Components/EditStudent.jsx';
 
 function App() {
     const [forecasts, setForecasts] = useState();
@@ -37,6 +38,7 @@ function App() {
                 <Routes>
                     <Route path="/students" element={<StudentList />} />
                     <Route path="/addstudent" element={<AddStudent />} />
+                    <Route path="/editstudent/:id" element={<EditStudent />} />
                     <Route path="/" element={
                         forecasts === undefined
                             ? <p><em>Loading... Please refresh once the ASP.NET backend has started.</em></p>

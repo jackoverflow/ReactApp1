@@ -61,6 +61,52 @@ public class StudentController : ControllerBase
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetStudent(int id)
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        var student = await connection.QueryFirstOrDefaultAsync<Student>(
+            "SELECT * FROM Students WHERE ID = @Id", new { Id = id });
+
+        if (student == null)
+        {
+            return NotFound();
+        }
+        return Ok(student);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateStudent(int id, [FromBody] Student student)
+    {
+        if (student == null || student.ID != id)
+        {
+            return BadRequest("Student data is invalid.");
+        }
+
+        using var connection = new NpgsqlConnection(_connectionString);
+        var updateQuery = @"
+            UPDATE Students 
+            SET Firstname = @Firstname, Lastname = @Lastname, BirthDate = @BirthDate 
+            WHERE ID = @Id";
+
+        var parameters = new
+        {
+            student.Firstname,
+            student.Lastname,
+            student.BirthDate,
+            Id = id
+        };
+
+        var affectedRows = await connection.ExecuteAsync(updateQuery, parameters);
+
+        if (affectedRows == 0)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
     public StudentController(IConfiguration configuration)
     {
         _configuration = configuration;
