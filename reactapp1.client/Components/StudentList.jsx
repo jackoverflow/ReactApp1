@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import './StudentList.css';
 
 const StudentList = () => {
     const [students, setStudents] = useState([]);
@@ -38,9 +39,10 @@ const StudentList = () => {
     };
 
     return (
-        <div>
+        <div className="student-container">
             <h1>Student List</h1>
-            <table>
+            <Link to="/addstudent" className="add-button">Add New Student</Link>
+            <table className="student-table">
                 <thead>
                     <tr>
                         <th>Firstname</th>
@@ -56,15 +58,20 @@ const StudentList = () => {
                                 <td>{student.firstname}</td>
                                 <td>{student.lastname}</td>
                                 <td>{formatDate(student.birthDate)}</td>
-                                <td>
-                                    <Link to={`/editstudent/${student.id}`}>Edit</Link>
-                                    <button onClick={() => handleDelete(student.id)}>Delete</button>
+                                <td className="action-buttons">
+                                    <Link to={`/editstudent/${student.id}`} className="edit-button">Edit</Link>
+                                    <button 
+                                        onClick={() => handleDelete(student.id)}
+                                        className="delete-button"
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="4">No students found</td>
+                            <td colSpan="4" className="no-data">No students found</td>
                         </tr>
                     )}
                 </tbody>
