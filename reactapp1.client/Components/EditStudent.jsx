@@ -12,6 +12,8 @@ const EditStudent = () => {
     const formatDateForInput = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
+        // Add one day to compensate for timezone differences
+        date.setDate(date.getDate() + 1);
         return date.toISOString().split('T')[0];
     };
 
