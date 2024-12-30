@@ -8,13 +8,28 @@ const EditStudent = () => {
     const navigate = useNavigate();
     const [student, setStudent] = useState({ firstname: '', lastname: '', birthDate: '' });
 
+    // Format date for display in the input field
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+    };
+
     useEffect(() => {
         const fetchStudent = async () => {
             try {
                 const response = await axios.get(`http://localhost:5077/api/Student/${id}`);
-                setStudent(response.data);
-                console.log('Fetched student:', response.data);
+                const studentData = response.data;
+                // Ensure proper case for properties and format date
+                setStudent({
+                    id: studentData.id || studentData.ID,
+                    firstname: studentData.firstname || studentData.Firstname,
+                    lastname: studentData.lastname || studentData.Lastname,
+                    birthDate: formatDateForInput(studentData.birthDate || studentData.BirthDate)
+                });
+                console.log('Fetched student data:', studentData); // Debug log
             } catch (error) {
+                console.error('Error fetching student:', error);
                 toast.error('Failed to fetch student data.');
             }
         };
@@ -25,10 +40,20 @@ const EditStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:5077/api/Student/${id}`, student);
+            // Ensure proper case for API request
+            const studentData = {
+                ID: student.id,
+                Firstname: student.firstname,
+                Lastname: student.lastname,
+                BirthDate: student.birthDate
+            };
+            
+            console.log('Submitting student data:', studentData); // Debug log
+            await axios.put(`http://localhost:5077/api/Student/${id}`, studentData);
             toast.success('Student updated successfully!');
             navigate('/students');
         } catch (error) {
+            console.error('Error updating student:', error);
             toast.error('Failed to update student.');
         }
     };

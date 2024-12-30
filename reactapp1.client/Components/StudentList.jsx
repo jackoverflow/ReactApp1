@@ -21,6 +21,11 @@ const StudentList = () => {
         fetchStudents();
     }, []);
 
+    const formatDate = (dateString) => {
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('en-GB', options);
+    };
+
     const handleDelete = async (id) => {
         try {
             await axios.delete(`http://localhost:5077/api/Student/${id}`);
@@ -50,7 +55,7 @@ const StudentList = () => {
                             <tr key={student.id}>
                                 <td>{student.firstname}</td>
                                 <td>{student.lastname}</td>
-                                <td>{student.birthDate}</td>
+                                <td>{formatDate(student.birthDate)}</td>
                                 <td>
                                     <Link to={`/editstudent/${student.id}`}>Edit</Link>
                                     <button onClick={() => handleDelete(student.id)}>Delete</button>
