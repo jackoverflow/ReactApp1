@@ -61,37 +61,40 @@ const EditStudent = () => {
     };
 
     return (
-        <div>
+        <div className="container mt-4">
             <h2>Edit Student</h2>
             <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Firstname:</label>
+                <div className="mb-3">
+                    <label className="form-label">Firstname:</label>
                     <input
                         type="text"
+                        className="form-control"
                         value={student.firstname}
                         onChange={(e) => setStudent({ ...student, firstname: e.target.value })}
                         required
                     />
                 </div>
-                <div>
-                    <label>Lastname:</label>
+                <div className="mb-3">
+                    <label className="form-label">Lastname:</label>
                     <input
                         type="text"
+                        className="form-control"
                         value={student.lastname}
                         onChange={(e) => setStudent({ ...student, lastname: e.target.value })}
                         required
                     />
                 </div>
-                <div>
-                    <label>Birth Date:</label>
+                <div className="mb-3">
+                    <label className="form-label">Birth Date:</label>
                     <input
                         type="date"
+                        className="form-control"
                         value={student.birthDate}
                         onChange={(e) => setStudent({ ...student, birthDate: e.target.value })}
                         required
                     />
                 </div>
-                <button type="submit">Update Student</button>
+                <button type="submit" className="btn btn-primary">Update Student</button>
             </form>
         </div>
     );
