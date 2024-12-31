@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 
@@ -94,7 +94,10 @@ const EditStudent = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">Update Student</button>
+                <div className="d-flex justify-content-start mt-3">
+                    <button type="submit" className="btn btn-primary">Update Student</button>
+                    <Link to="/students" className="btn btn-secondary ms-2">Back to List</Link>
+                </div>
             </form>
         </div>
     );

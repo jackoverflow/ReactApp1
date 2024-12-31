@@ -22,26 +22,59 @@ const StudentList = () => {
         fetchStudents();
     }, []);
 
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this student?')) {
+            try {
+                await axios.delete(`http://localhost:5077/api/Student/${id}`);
+                setStudents(students.filter(student => student.id !== id));
+                toast.success('Student deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                toast.error('Failed to delete student.');
+            }
+        }
+    };
+
     const formatDate = (dateString) => {
         const options = { day: '2-digit', month: 'short', year: 'numeric' };
         return new Date(dateString).toLocaleDateString('en-GB', options);
     };
 
-    const handleDelete = async (id) => {
+    const handleGeneratePDF = async () => {
         try {
-            await axios.delete(`http://localhost:5077/api/Student/${id}`);
-            setStudents(students.filter(student => student.id !== id));
-            toast.success('Student deleted successfully!');
+            const response = await axios.get('http://localhost:5077/api/Student/generate-pdf', {
+                responseType: 'blob', // Important for handling binary data
+            });
+
+            if (response.status === 200) {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'Students.xlsx'); // Specify the file name
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                console.error('Failed to generate PDF:', response.statusText);
+                toast.error('Failed to generate PDF.');
+            }
         } catch (error) {
-            console.error('Error deleting student:', error);
-            toast.error('Failed to delete student.');
+            console.error('Error generating PDF:', error);
+            toast.error('Failed to generate PDF.');
         }
     };
 
     return (
         <div className="student-container">
             <h1>Student List</h1>
-            <Link to="/addstudent" className="add-button">Add New Student</Link>
+            <div style={{ display: 'flex', gap: '10px' }}>
+                <Link to="/addstudent" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+                    Add New Student
+                </Link>
+                <button onClick={handleGeneratePDF} className="btn btn-success" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+                    Generate PDF
+                </button>
+            </div>
             <table className="student-table">
                 <thead>
                     <tr>
@@ -58,14 +91,9 @@ const StudentList = () => {
                                 <td>{student.firstname}</td>
                                 <td>{student.lastname}</td>
                                 <td>{formatDate(student.birthDate)}</td>
-                                <td className="action-buttons">
-                                    <Link to={`/editstudent/${student.id}`} className="edit-button">Edit</Link>
-                                    <button 
-                                        onClick={() => handleDelete(student.id)}
-                                        className="delete-button"
-                                    >
-                                        Delete
-                                    </button>
+                                <td>
+                                    <Link to={`/editstudent/${student.id}`} className="btn btn-warning">Edit</Link>
+                                    <button onClick={() => handleDelete(student.id)} className="btn btn-danger delete-button">Delete</button>
                                 </td>
                             </tr>
                         ))
