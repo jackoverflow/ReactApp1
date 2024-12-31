@@ -12,8 +12,11 @@ const StudentList = () => {
         const fetchStudents = async () => {
             try {
                 const response = await axios.get('http://localhost:5077/api/Student');
-                console.log('Fetched students:', response.data);
-                setStudents(response.data);
+                const formattedStudents = response.data.map(student => ({
+                    ...student,
+                    birthDate: student.birthDate ? student.birthDate.split('T')[0] : ''
+                }));
+                setStudents(formattedStudents);
             } catch (error) {
                 console.error('Error fetching students:', error);
                 toast.error('Failed to fetch students.');
@@ -47,32 +50,8 @@ const StudentList = () => {
     };
 
     const formatDate = (dateString) => {
-        const options = { day: '2-digit', month: 'short', year: 'numeric' };
-        return new Date(dateString).toLocaleDateString('en-GB', options);
-    };
-
-    const handleGeneratePDF = async () => {
-        try {
-            const response = await axios.get('http://localhost:5077/api/Student/generate-pdf', {
-                responseType: 'blob', // Important for handling binary data
-            });
-
-            if (response.status === 200) {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'Students.xlsx'); // Specify the file name
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } else {
-                console.error('Failed to generate PDF:', response.statusText);
-                toast.error('Failed to generate PDF.');
-            }
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            toast.error('Failed to generate PDF.');
-        }
+        if (!dateString) return '';
+        return new Date(dateString).toLocaleDateString();
     };
 
     return (
@@ -82,9 +61,6 @@ const StudentList = () => {
                 <Link to="/addstudent" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Student
                 </Link>
-                <button onClick={handleGeneratePDF} className="btn btn-success" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
-                    Generate PDF
-                </button>
             </div>
             <table className="student-table">
                 <thead>
@@ -99,12 +75,23 @@ const StudentList = () => {
                     {students.length > 0 ? (
                         students.map(student => (
                             <tr key={student.id}>
-                                <td>{student.firstname}</td>
-                                <td>{student.lastname}</td>
-                                <td>{formatDate(student.birthDate)}</td>
+                                <td>{student.firstname || student.Firstname}</td>
+                                <td>{student.lastname || student.Lastname}</td>
+                                <td>{formatDate(student.birthDate || student.BirthDate)}</td>
                                 <td>
-                                    <Link to={`/editstudent/${student.id}`} className="btn btn-warning">Edit</Link>
-                                    <button onClick={() => handleDelete(student.id)} className="btn btn-danger delete-button">Delete</button>
+                                    <Link 
+                                        to={`/editstudent/${student.id}`} 
+                                        className="btn btn-warning"
+                                        state={{ student: student }}
+                                    >
+                                        Edit
+                                    </Link>
+                                    <button 
+                                        onClick={() => handleDelete(student.id)} 
+                                        className="btn btn-danger delete-button"
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))

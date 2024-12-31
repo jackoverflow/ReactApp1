@@ -15,11 +15,15 @@ const EditStudent = () => {
             try {
                 const response = await axios.get(`http://localhost:5077/api/Student/${id}`);
                 const studentData = response.data;
+                // Format the date when setting the student data
+                const formattedDate = studentData.birthDate ? 
+                    new Date(studentData.birthDate).toISOString().split('T')[0] : '';
+                
                 setStudent({
                     id: studentData.id || studentData.ID,
                     firstname: studentData.firstname || studentData.Firstname,
                     lastname: studentData.lastname || studentData.Lastname,
-                    birthDate: studentData.birthDate || studentData.BirthDate
+                    birthDate: formattedDate
                 });
             } catch (error) {
                 console.error('Error fetching student:', error);
