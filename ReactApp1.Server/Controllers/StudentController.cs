@@ -24,7 +24,7 @@ public class StudentController : ControllerBase
     public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
     {
         using var connection = new NpgsqlConnection(_connectionString);
-        var students = await connection.QueryAsync<Student>("SELECT * FROM Students");
+        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students");
         return Ok(students);
     }
 
@@ -33,7 +33,7 @@ public class StudentController : ControllerBase
     {
         using var connection = new NpgsqlConnection(_connectionString);
         var student = await connection.QueryFirstOrDefaultAsync<Student>(
-            "SELECT * FROM Students WHERE ID = @Id", new { Id = id });
+            "SELECT * FROM public.Students WHERE ID = @Id", new { Id = id });
 
         if (student == null)
         {
@@ -53,7 +53,7 @@ public class StudentController : ControllerBase
             }
 
             using var connection = new NpgsqlConnection(_connectionString);
-            var query = "INSERT INTO Students (Firstname, Lastname, BirthDate) VALUES (@Firstname, @Lastname, @BirthDate) RETURNING *";
+            var query = "INSERT INTO public.Students (Firstname, Lastname, BirthDate) VALUES (@Firstname, @Lastname, @BirthDate) RETURNING *";
             var addedStudent = await connection.QuerySingleAsync<Student>(query, student);
 
             return CreatedAtAction(nameof(GetStudent), new { id = addedStudent.ID }, addedStudent);
@@ -73,7 +73,7 @@ public class StudentController : ControllerBase
         }
 
         using var connection = new NpgsqlConnection(_connectionString);
-        var query = "UPDATE Students SET Firstname = @Firstname, Lastname = @Lastname, BirthDate = @BirthDate WHERE ID = @Id";
+        var query = "UPDATE public.Students SET Firstname = @Firstname, Lastname = @Lastname, BirthDate = @BirthDate WHERE ID = @Id";
         var affectedRows = await connection.ExecuteAsync(query, student);
 
         if (affectedRows == 0)
@@ -88,7 +88,7 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> DeleteStudent(int id)
     {
         using var connection = new NpgsqlConnection(_connectionString);
-        var affectedRows = await connection.ExecuteAsync("DELETE FROM Students WHERE ID = @Id", new { Id = id });
+        var affectedRows = await connection.ExecuteAsync("DELETE FROM public.Students WHERE ID = @Id", new { Id = id });
 
         if (affectedRows == 0)
         {
@@ -102,7 +102,7 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> GeneratePDF()
     {
         using var connection = new NpgsqlConnection(_connectionString);
-        var students = await connection.QueryAsync<Student>("SELECT * FROM Students");
+        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students");
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Students");
