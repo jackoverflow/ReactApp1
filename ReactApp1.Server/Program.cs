@@ -1,3 +1,7 @@
+using Npgsql;
+using Dapper;
+using System.IO;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -22,6 +26,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Initialize the database
+Initialize(app.Configuration.GetConnectionString("DefaultConnection"));
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
@@ -42,3 +49,10 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.Run();
+
+void Initialize(string connectionString)
+{
+    using var connection = new NpgsqlConnection(connectionString);
+    var script = File.ReadAllText("Database/InitialSchema.sql");
+    connection.Execute(script);
+}

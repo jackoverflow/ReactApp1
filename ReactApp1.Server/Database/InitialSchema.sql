@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS Students (
+    ID SERIAL PRIMARY KEY,
+    Firstname VARCHAR(100) NOT NULL,
+    Lastname VARCHAR(100) NOT NULL,
+    BirthDate DATE NOT NULL
+);
