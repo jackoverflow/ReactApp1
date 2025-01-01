@@ -59,7 +59,8 @@ const StudentList = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
-        return new Date(dateString).toLocaleDateString();
+        const options = { year: 'numeric', month: 'short', day: '2-digit' };
+        return new Date(dateString).toLocaleDateString('en-US', options).replace(',', '');
     };
 
     const handleGenerateExcel = async () => {
