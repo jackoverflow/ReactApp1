@@ -35,9 +35,12 @@ const StudentList = () => {
     }, []);
 
     const handleDelete = async (id) => {
+        const studentToDelete = students.find(student => student.id === id);
+        const studentName = studentToDelete ? `${studentToDelete.firstname || studentToDelete.Firstname} ${studentToDelete.lastname || studentToDelete.Lastname}` : 'this student';
+
         const result = await Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            html: `You won't be able to revert this!<br />Deleting ${studentName}.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
