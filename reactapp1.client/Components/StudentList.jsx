@@ -16,6 +16,14 @@ const StudentList = () => {
                     ...student,
                     birthDate: student.birthDate ? student.birthDate.split('T')[0] : ''
                 }));
+
+                // Sort students by Lastname in ascending order
+                formattedStudents.sort((a, b) => {
+                    const lastnameA = a.lastname || a.Lastname;
+                    const lastnameB = b.lastname || b.Lastname;
+                    return lastnameA.localeCompare(lastnameB);
+                });
+
                 setStudents(formattedStudents);
             } catch (error) {
                 console.error('Error fetching students:', error);

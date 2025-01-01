@@ -24,7 +24,7 @@ public class StudentController : ControllerBase
     public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
     {
         using var connection = new NpgsqlConnection(_connectionString);
-        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students");
+        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students ORDER BY Lastname ASC");
         return Ok(students);
     }
 
