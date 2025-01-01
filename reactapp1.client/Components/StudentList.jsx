@@ -7,24 +7,22 @@ import './StudentList.css';
 
 const StudentList = () => {
     const [students, setStudents] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 4; // Variable to modify the number of records per page
+    const [totalStudents, setTotalStudents] = useState(0); // New state for total students
 
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await axios.get('http://localhost:5077/api/Student');
+                const response = await axios.get(`http://localhost:5077/api/Student?pageNumber=${currentPage}&pageSize=${pageSize}`);
                 const formattedStudents = response.data.map(student => ({
                     ...student,
                     birthDate: student.birthDate ? student.birthDate.split('T')[0] : ''
                 }));
-
-                // Sort students by Lastname in ascending order
-                formattedStudents.sort((a, b) => {
-                    const lastnameA = a.lastname || a.Lastname;
-                    const lastnameB = b.lastname || b.Lastname;
-                    return lastnameA.localeCompare(lastnameB);
-                });
-
                 setStudents(formattedStudents);
+                // Fetch total number of students for pagination
+                const totalResponse = await axios.get(`http://localhost:5077/api/Student/count`);
+                setTotalStudents(totalResponse.data);
             } catch (error) {
                 console.error('Error fetching students:', error);
                 toast.error('Failed to fetch students.');
@@ -32,7 +30,17 @@ const StudentList = () => {
         };
 
         fetchStudents();
-    }, []);
+    }, [currentPage, pageSize]);
+
+    const totalPages = Math.ceil(totalStudents / pageSize); // Calculate total pages
+
+    const handleNextPage = () => {
+        setCurrentPage(prevPage => prevPage + 1);
+    };
+
+    const handlePreviousPage = () => {
+        setCurrentPage(prevPage => Math.max(prevPage - 1, 1));
+    };
 
     const handleDelete = async (id) => {
         const studentToDelete = students.find(student => student.id === id);
@@ -140,6 +148,17 @@ const StudentList = () => {
                     )}
                 </tbody>
             </table>
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <a 
+                        key={index + 1} 
+                        onClick={() => setCurrentPage(index + 1)} 
+                        className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}
+                    >
+                        {index + 1}
+                    </a>
+                ))}
+            </div>
         </div>
     );
 };

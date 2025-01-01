@@ -21,10 +21,14 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Student>>> GetStudents()
+    public async Task<ActionResult<IEnumerable<Student>>> GetStudents(int pageNumber = 1, int pageSize = 10)
     {
         using var connection = new NpgsqlConnection(_connectionString);
-        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students ORDER BY Lastname ASC");
+        
+        var students = await connection.QueryAsync<Student>(
+            "SELECT * FROM public.Students ORDER BY Lastname ASC OFFSET @Offset LIMIT @Limit",
+            new { Offset = (pageNumber - 1) * pageSize, Limit = pageSize });
+
         return Ok(students);
     }
 
@@ -142,5 +146,13 @@ public class StudentController : ControllerBase
         stream.Position = 0;
 
         return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Students.xlsx");
+    }
+
+    [HttpGet("count")]
+    public async Task<ActionResult<int>> GetStudentCount()
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        var count = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM public.Students");
+        return Ok(count);
     }
 }

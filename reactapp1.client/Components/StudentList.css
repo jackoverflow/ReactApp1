@@ -82,3 +82,23 @@
 .add-button:hover {
     background-color: #1976D2;
 }
+
+.page-link {
+    cursor: pointer;
+    text-decoration: none;
+    padding: 5px 10px;
+    margin: 0 5px;
+    color: #007bff; /* Change to your desired color */
+    border: none; /* Ensure no border */
+    border-radius: 4px; /* Optional: add rounded corners */
+    transition: background-color 0.3s; /* Optional: smooth background transition */
+}
+
+.page-link:hover {
+    background-color: #f0f0f0; /* Change to your desired hover color */
+}
+
+.page-link.active {
+    font-weight: bold; /* Highlight the active page */
+    color: #0056b3; /* Change to your desired active color */
+}
