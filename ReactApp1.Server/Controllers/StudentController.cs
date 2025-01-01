@@ -112,7 +112,7 @@ public class StudentController : ControllerBase
         var worksheet = workbook.Worksheets.Add("Students");
 
         // Add headers and style them
-        var headers = new[] { "ID", "Firstname", "Lastname", "BirthDate" };
+        var headers = new[] { "Firstname", "Lastname", "BirthDate" };
         for (int i = 0; i < headers.Length; i++)
         {
             var cell = worksheet.Cell(1, i + 1);
@@ -124,10 +124,9 @@ public class StudentController : ControllerBase
         var row = 2;
         foreach (var student in students)
         {
-            worksheet.Cell(row, 1).Value = student.ID;
-            worksheet.Cell(row, 2).Value = student.Firstname;
-            worksheet.Cell(row, 3).Value = student.Lastname;
-            worksheet.Cell(row, 4).Value = student.BirthDate.ToString("yyyy-MM-dd");
+            worksheet.Cell(row, 1).Value = student.Firstname;
+            worksheet.Cell(row, 2).Value = student.Lastname;
+            worksheet.Cell(row, 3).Value = student.BirthDate.ToString("MMM-dd-yyyy");
             row++;
         }
 
