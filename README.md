@@ -46,4 +46,4 @@
 ## Additional Information
 
 - Ensure that your connection string in `appsettings.json` is correctly configured to connect to the `studentsinfo` database.
-- The application uses Dapper for data access and ClosedXML for generating PDF files.
+- The application uses Dapper for data access and ClosedXML for generating Excel files.
