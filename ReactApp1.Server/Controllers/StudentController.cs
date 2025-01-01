@@ -98,8 +98,8 @@ public class StudentController : ControllerBase
         return NoContent();
     }
 
-    [HttpGet("generate-pdf")]
-    public async Task<IActionResult> GeneratePDF()
+    [HttpGet("generate-excel")]
+    public async Task<IActionResult> GenerateExcel()
     {
         using var connection = new NpgsqlConnection(_connectionString);
         var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students");
@@ -107,11 +107,14 @@ public class StudentController : ControllerBase
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Students");
 
-        // Add headers
-        worksheet.Cell(1, 1).Value = "ID";
-        worksheet.Cell(1, 2).Value = "Firstname";
-        worksheet.Cell(1, 3).Value = "Lastname";
-        worksheet.Cell(1, 4).Value = "BirthDate";
+        // Add headers and style them
+        var headers = new[] { "ID", "Firstname", "Lastname", "BirthDate" };
+        for (int i = 0; i < headers.Length; i++)
+        {
+            var cell = worksheet.Cell(1, i + 1);
+            cell.Value = headers[i];
+            cell.Style.Font.Bold = true;
+        }
 
         // Add student data
         var row = 2;
@@ -122,6 +125,16 @@ public class StudentController : ControllerBase
             worksheet.Cell(row, 3).Value = student.Lastname;
             worksheet.Cell(row, 4).Value = student.BirthDate.ToString("yyyy-MM-dd");
             row++;
+        }
+
+        // Auto-fit columns
+        worksheet.Columns().AdjustToContents();
+
+        // Add 5 characters width to all columns except ID
+        for (int i = 2; i <= 4; i++)
+        {
+            var column = worksheet.Column(i);
+            column.Width = column.Width + 5;
         }
 
         using var stream = new MemoryStream();

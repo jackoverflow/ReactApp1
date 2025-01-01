@@ -54,6 +54,25 @@ const StudentList = () => {
         return new Date(dateString).toLocaleDateString();
     };
 
+    const handleGenerateExcel = async () => {
+        try {
+            const response = await axios.get('http://localhost:5077/api/Student/generate-excel', {
+                responseType: 'blob',
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Students.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            toast.success('Excel file generated successfully!');
+        } catch (error) {
+            console.error('Error generating Excel:', error);
+            toast.error('Failed to generate Excel.');
+        }
+    };
+
     return (
         <div className="student-container">
             <h1>Student List</h1>
@@ -61,6 +80,13 @@ const StudentList = () => {
                 <Link to="/addstudent" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Student
                 </Link>
+                <button 
+                    className="generate-excel-button" 
+                    style={{ height: '40px' }} 
+                    onClick={handleGenerateExcel}
+                >
+                    Generate Excel
+                </button>
             </div>
             <table className="student-table">
                 <thead>
