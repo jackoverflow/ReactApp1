@@ -81,7 +81,7 @@ const StudentList = () => {
                     Add New Student
                 </Link>
                 <button 
-                    className="generate-excel-button" 
+                    className="btn btn-success" 
                     style={{ height: '40px' }} 
                     onClick={handleGenerateExcel}
                 >
