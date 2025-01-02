@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import './StudentList.css';
+import '.././Components/StudentList.css';
 
 const StudentList = () => {
     const [students, setStudents] = useState([]);
@@ -117,7 +117,7 @@ const StudentList = () => {
                 </button>
             </div>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
-                <label htmlFor="search-input" style={{ fontWeight: 'bold' }}>Search:</label>
+                <label htmlFor="search-input">Search:</label>
                 <input 
                     id="search-input"
                     type="text" 

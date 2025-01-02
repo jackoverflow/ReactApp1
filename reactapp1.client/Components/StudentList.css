@@ -33,6 +33,11 @@
     display: flex;
     gap: 10px;
 }
+.search-input {
+    background-color: lightgoldenrodyellow;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
 
 .edit-button {
     padding: 6px 12px;
