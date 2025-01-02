@@ -148,13 +148,12 @@ const StudentList = () => {
                     )}
                 </tbody>
             </table>
-            <div className="pagination" style={{ marginTop: '5px' }}>
+            <div className="pagination">
                 {Array.from({ length: totalPages }, (_, index) => (
                     <a 
                         key={index + 1} 
                         onClick={() => setCurrentPage(index + 1)} 
                         className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}
-                        style={{ margin: '0' }}
                     >
                         {index + 1}
                     </a>

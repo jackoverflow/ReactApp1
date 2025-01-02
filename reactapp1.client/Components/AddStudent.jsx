@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import './StudentList.css';
@@ -8,6 +8,11 @@ const AddStudent = () => {
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [birthDate, setBirthDate] = useState('');
+    const firstnameInputRef = useRef(null);
+
+    useEffect(() => {
+        firstnameInputRef.current?.focus();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -64,6 +69,7 @@ const AddStudent = () => {
                                         className="form-control" 
                                         value={firstname} 
                                         onChange={(e) => setFirstname(e.target.value)}
+                                        ref={firstnameInputRef}
                                         required 
                                     />
                                 </div>
