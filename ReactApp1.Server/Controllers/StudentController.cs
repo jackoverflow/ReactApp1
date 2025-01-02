@@ -106,7 +106,7 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> GenerateExcel()
     {
         using var connection = new NpgsqlConnection(_connectionString);
-        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students");
+        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students ORDER BY Lastname ASC");
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Students");
