@@ -96,6 +96,11 @@ const StudentList = () => {
         }
     };
 
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setCurrentPage(1); // Reset to the first page on new search
+    };
+
     return (
         <div className="student-container">
             <h1>Student List</h1>
@@ -119,7 +124,7 @@ const StudentList = () => {
                     className="search-input"
                     placeholder="Search by Firstname or Lastname"
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={handleSearchChange}
                 />
             </div>
             <table className="student-table">

@@ -164,20 +164,11 @@ public class StudentController : ControllerBase
         using var connection = new NpgsqlConnection(_connectionString);
         
         var query = @"SELECT * FROM public.Students 
-                     WHERE 1=1 
-                     AND (
-                         CASE WHEN @SearchTerm = '' THEN true
-                         ELSE (
-                             Firstname ILIKE @SearchPattern 
-                             OR Lastname ILIKE @SearchPattern
-                         )
-                         END
-                     )
+                     WHERE (Firstname ILIKE @SearchPattern OR Lastname ILIKE @SearchPattern)
                      ORDER BY Lastname ASC
                      OFFSET @Offset LIMIT @Limit";
 
         var parameters = new DynamicParameters();
-        parameters.Add("SearchTerm", searchTerm ?? "");
         parameters.Add("SearchPattern", $"%{searchTerm}%");
         parameters.Add("Offset", (pageNumber - 1) * pageSize);
         parameters.Add("Limit", pageSize);
