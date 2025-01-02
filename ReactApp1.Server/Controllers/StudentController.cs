@@ -154,4 +154,36 @@ public class StudentController : ControllerBase
         var count = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM public.Students");
         return Ok(count);
     }
+
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<Student>>> SearchStudent(
+        string searchTerm = "", 
+        int pageNumber = 1, 
+        int pageSize = 10)
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        
+        var query = @"SELECT * FROM public.Students 
+                     WHERE 1=1 
+                     AND (
+                         CASE WHEN @SearchTerm = '' THEN true
+                         ELSE (
+                             Firstname ILIKE @SearchPattern 
+                             OR Lastname ILIKE @SearchPattern
+                         )
+                         END
+                     )
+                     ORDER BY Lastname ASC
+                     OFFSET @Offset LIMIT @Limit";
+
+        var parameters = new DynamicParameters();
+        parameters.Add("SearchTerm", searchTerm ?? "");
+        parameters.Add("SearchPattern", $"%{searchTerm}%");
+        parameters.Add("Offset", (pageNumber - 1) * pageSize);
+        parameters.Add("Limit", pageSize);
+
+        var students = await connection.QueryAsync<Student>(query, parameters);
+
+        return Ok(students);
+    }
 }

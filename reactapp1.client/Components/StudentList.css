@@ -102,3 +102,10 @@
     font-weight: bold; /* Highlight the active page */
     color: #0056b3; /* Change to your desired active color */
 }
+
+.search-input {
+    width: 250px;
+    height: 30px;
+    padding: 2px;
+    font-size: 14px;
+}

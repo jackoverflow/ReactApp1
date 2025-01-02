@@ -8,20 +8,23 @@ import './StudentList.css';
 const StudentList = () => {
     const [students, setStudents] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 4; // Variable to modify the number of records per page
-    const [totalStudents, setTotalStudents] = useState(0); // New state for total students
+    const [totalStudents, setTotalStudents] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+    const pageSize = 4;
 
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await axios.get(`http://localhost:5077/api/Student?pageNumber=${currentPage}&pageSize=${pageSize}`);
-                const formattedStudents = response.data.map(student => ({
-                    ...student,
-                    birthDate: student.birthDate ? student.birthDate.split('T')[0] : ''
-                }));
-                setStudents(formattedStudents);
+                const response = await axios.get(`http://localhost:5077/api/student/search`, {
+                    params: {
+                        searchTerm: searchTerm,
+                        pageNumber: currentPage,
+                        pageSize: pageSize
+                    }
+                });
+                setStudents(response.data);
                 // Fetch total number of students for pagination
-                const totalResponse = await axios.get(`http://localhost:5077/api/Student/count`);
+                const totalResponse = await axios.get(`http://localhost:5077/api/student/count`);
                 setTotalStudents(totalResponse.data);
             } catch (error) {
                 console.error('Error fetching students:', error);
@@ -30,7 +33,7 @@ const StudentList = () => {
         };
 
         fetchStudents();
-    }, [currentPage, pageSize]);
+    }, [currentPage, searchTerm]);
 
     const totalPages = Math.ceil(totalStudents / pageSize); // Calculate total pages
 
@@ -96,7 +99,7 @@ const StudentList = () => {
     return (
         <div className="student-container">
             <h1>Student List</h1>
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                 <Link to="/addstudent" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Student
                 </Link>
@@ -107,6 +110,17 @@ const StudentList = () => {
                 >
                     Generate Excel
                 </button>
+            </div>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'center' }}>
+                <label htmlFor="search-input" style={{ fontWeight: 'bold' }}>Search:</label>
+                <input 
+                    id="search-input"
+                    type="text" 
+                    className="search-input"
+                    placeholder="Search by Firstname or Lastname"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
             <table className="student-table">
                 <thead>
