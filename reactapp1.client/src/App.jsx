@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import StudentList from '.././Components/StudentList';
-import AddStudent from '.././Components/AddStudent';
-import EditStudent from '.././Components/EditStudent';
+import StudentList from './Components/StudentList';
+import AddStudent from './Components/AddStudent';
+import EditStudent from './Components/EditStudent';
 
 const App = () => {
     return (
