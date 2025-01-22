@@ -3,6 +3,7 @@ using Npgsql;
 using Microsoft.AspNetCore.Mvc;
 using ReactApp1.Server.Models;
 using ClosedXML.Excel;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers;
@@ -13,14 +14,12 @@ public class StudentController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly string? _connectionString;
-    private readonly YourDbContext _context; // Replace with your actual DbContext
 
-    public StudentController(IConfiguration configuration, YourDbContext context)
+    public StudentController(IConfiguration configuration)
     {
         _configuration = configuration;
         _connectionString = _configuration.GetConnectionString("DefaultConnection") 
             ?? throw new ArgumentNullException(nameof(_connectionString));
-        _context = context;
     }
 
     [HttpGet]
@@ -192,7 +191,7 @@ public class StudentController : ControllerBase
         try
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            var query = "INSERT INTO public.Subjects (Name, Description, StudentID) VALUES (@Name, @Description, @StudentID) RETURNING *";
+            var query = "INSERT INTO public.Subjects (Name, Description, studentid) VALUES (@Name, @Description, @StudentID) RETURNING *";
             var addedSubject = await connection.QuerySingleAsync<Subject>(query, subject);
 
             return CreatedAtAction(nameof(GetSubjectById), new { id = addedSubject.ID }, addedSubject);

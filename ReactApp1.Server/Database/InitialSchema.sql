@@ -10,6 +10,7 @@ CREATE TABLE Subjects (
     ID SERIAL,
     Name VARCHAR(100) CONSTRAINT nn_name NOT NULL,
     Description VARCHAR(255),
-    StudentID INT CONSTRAINT fk_student_id REFERENCES Students(ID),
+    StudentID INT,
+    CONSTRAINT fk_student_id FOREIGN KEY (StudentID) REFERENCES Students(ID),
     CONSTRAINT pk_subjects PRIMARY KEY (ID)
 );
