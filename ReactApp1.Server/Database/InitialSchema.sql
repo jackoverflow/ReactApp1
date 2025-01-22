@@ -1,16 +1,22 @@
-CREATE TABLE Students (
-    ID SERIAL,
+-- InitialSchema.sql
+
+-- Drop existing tables if they exist
+DROP TABLE IF EXISTS public.Subjects;
+DROP TABLE IF EXISTS public.Students;
+
+-- Create Students table
+CREATE TABLE public.Students (
+    ID SERIAL PRIMARY KEY,
     Firstname VARCHAR(100) CONSTRAINT nn_firstname NOT NULL,
     Lastname VARCHAR(100) CONSTRAINT nn_lastname NOT NULL,
-    BirthDate DATE CONSTRAINT nn_birthdate NOT NULL,
-    CONSTRAINT pk_students PRIMARY KEY (ID)
+    BirthDate DATE CONSTRAINT nn_birthdate NOT NULL
 );
 
-CREATE TABLE Subjects (
-    ID SERIAL,
+-- Create Subjects table
+CREATE TABLE public.Subjects (
+    ID SERIAL PRIMARY KEY,
     Name VARCHAR(100) CONSTRAINT nn_name NOT NULL,
     Description VARCHAR(255),
-    StudentID INT,
-    CONSTRAINT fk_student_id FOREIGN KEY (StudentID) REFERENCES Students(ID),
-    CONSTRAINT pk_subjects PRIMARY KEY (ID)
+    StudentID INT NULL,
+    CONSTRAINT fk_student_id FOREIGN KEY (StudentID) REFERENCES public.Students(ID) ON DELETE SET NULL
 );

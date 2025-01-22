@@ -61,7 +61,8 @@ void Initialize(string connectionString)
     if (!tableExists)
     {
         var script = File.ReadAllText("Database/InitialSchema.sql");
-        script = script.Replace("CREATE TABLE ", "CREATE TABLE public.");
+        // Ensure this line does not cause double schema references
+        // script = script.Replace("CREATE TABLE ", "CREATE TABLE public."); // Comment this out if not needed
         connection.Execute(script);
         Console.WriteLine("Database initialized successfully.");
     }

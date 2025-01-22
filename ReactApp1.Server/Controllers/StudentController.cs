@@ -191,7 +191,7 @@ public class StudentController : ControllerBase
         try
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            var query = "INSERT INTO public.Subjects (Name, Description, studentid) VALUES (@Name, @Description, @StudentID) RETURNING *";
+            var query = "INSERT INTO public.Subjects (Name, Description, StudentID) VALUES (@Name, @Description, @StudentID) RETURNING *";
             var addedSubject = await connection.QuerySingleAsync<Subject>(query, subject);
 
             return CreatedAtAction(nameof(GetSubjectById), new { id = addedSubject.ID }, addedSubject);
