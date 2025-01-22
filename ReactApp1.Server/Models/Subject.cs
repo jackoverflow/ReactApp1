@@ -6,8 +6,8 @@ namespace ReactApp1.Server.Models
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
 
-        // Foreign key to associate with Student
-        public int StudentID { get; set; }
-        public Student Student { get; set; } // Navigation property
+        // Foreign key to associate with Student (nullable)
+        public int? StudentID { get; set; } // Make this nullable
+        public Student? Student { get; set; } // Navigation property (optional)
     }
 } 

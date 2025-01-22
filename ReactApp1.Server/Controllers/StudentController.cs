@@ -3,6 +3,7 @@ using Npgsql;
 using Microsoft.AspNetCore.Mvc;
 using ReactApp1.Server.Models;
 using ClosedXML.Excel;
+using System.Threading.Tasks;
 
 namespace ReactApp1.Server.Controllers;
 
@@ -12,12 +13,14 @@ public class StudentController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly string? _connectionString;
+    private readonly YourDbContext _context; // Replace with your actual DbContext
 
-    public StudentController(IConfiguration configuration)
+    public StudentController(IConfiguration configuration, YourDbContext context)
     {
         _configuration = configuration;
         _connectionString = _configuration.GetConnectionString("DefaultConnection") 
             ?? throw new ArgumentNullException(nameof(_connectionString));
+        _context = context;
     }
 
     [HttpGet]
@@ -176,5 +179,41 @@ public class StudentController : ControllerBase
         var students = await connection.QueryAsync<Student>(query, parameters);
 
         return Ok(students);
+    }
+
+    [HttpPost("subject")]
+    public async Task<IActionResult> AddSubject([FromBody] Subject subject)
+    {
+        if (subject == null)
+        {
+            return BadRequest("Subject data is null.");
+        }
+
+        try
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+            var query = "INSERT INTO public.Subjects (Name, Description, StudentID) VALUES (@Name, @Description, @StudentID) RETURNING *";
+            var addedSubject = await connection.QuerySingleAsync<Subject>(query, subject);
+
+            return CreatedAtAction(nameof(GetSubjectById), new { id = addedSubject.ID }, addedSubject);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    [HttpGet("subject/{id}")]
+    public async Task<ActionResult<Subject>> GetSubjectById(int id)
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        var subject = await connection.QueryFirstOrDefaultAsync<Subject>(
+            "SELECT * FROM public.Subjects WHERE ID = @Id", new { Id = id });
+
+        if (subject == null)
+        {
+            return NotFound();
+        }
+        return subject;
     }
 }
