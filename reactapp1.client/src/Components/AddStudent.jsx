@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import './StudentList.css';
+import Swal from 'sweetalert2';
 
 const AddStudent = () => {
     const navigate = useNavigate();
@@ -38,8 +39,12 @@ const AddStudent = () => {
                 const addedStudent = await response.json();
                 console.log('Response successful, about to show toast');
                 
-                toast.success('Student added successfully!');
-                navigate('/students');
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'A student has been added.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
             } else {
                 const errorText = await response.text();
                 console.log('Error response:', errorText);
