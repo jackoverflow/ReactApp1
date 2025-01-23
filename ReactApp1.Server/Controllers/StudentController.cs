@@ -166,8 +166,8 @@ public class StudentController : ControllerBase
         using var connection = new NpgsqlConnection(_connectionString);
         
         var query = @"SELECT * FROM public.Students 
-                     WHERE (Firstname ILIKE @SearchPattern OR Lastname ILIKE @SearchPattern)
-                     ORDER BY Lastname ASC
+                     WHERE (FirstName ILIKE @SearchPattern OR LastName ILIKE @SearchPattern)
+                     ORDER BY LastName ASC
                      OFFSET @Offset LIMIT @Limit";
 
         var parameters = new DynamicParameters();
@@ -191,7 +191,7 @@ public class StudentController : ControllerBase
         try
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            var query = "INSERT INTO public.Subjects (ShortName, Description, StudentID) VALUES (@ShortName, @Description, @StudentID) RETURNING *";
+            var query = "INSERT INTO public.Subjects (ShortName, Description) VALUES (@ShortName, @Description) RETURNING *";
             var addedSubject = await connection.QuerySingleAsync<Subject>(query, subject);
 
             return CreatedAtAction(nameof(GetSubjectById), new { id = addedSubject.Id }, addedSubject);
