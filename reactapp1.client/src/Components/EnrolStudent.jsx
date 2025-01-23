@@ -132,12 +132,12 @@ const EnrolStudent = () => {
                     )}
                 </div>
                 <div className="form-group mb-3">
-                    <label>Selected Student:</label>
+                    <label><strong>Selected Student:</strong></label>
                     {selectedStudent ? (
-                        <div>
-                            <p>Firstname: {firstName}</p>
-                            <p>Lastname: {lastName}</p>
-                        </div>
+                        <ul style={{ listStyleType: 'none', padding: 0, marginBottom: '5px' }}>
+                            <li><strong>Firstname:</strong> {firstName}</li>
+                            <li><strong>Lastname:</strong> {lastName}</li>
+                        </ul>
                     ) : (
                         <p>No student selected</p>
                     )}
