@@ -47,7 +47,7 @@ const StudentList = () => {
 
     const handleDelete = async (id) => {
         const studentToDelete = students.find(student => student.id === id);
-        const studentName = studentToDelete ? `${studentToDelete.firstname || studentToDelete.Firstname} ${studentToDelete.lastname || studentToDelete.Lastname}` : 'this student';
+        const studentName = studentToDelete ? `${studentToDelete.firstName} ${studentToDelete.lastName}` : 'this student';
 
         const result = await Swal.fire({
             title: 'Are you sure?',
@@ -130,8 +130,8 @@ const StudentList = () => {
             <table className="student-table">
                 <thead>
                     <tr>
-                        <th>Firstname</th>
-                        <th>Lastname</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
                         <th>Birth Date</th>
                         <th>Actions</th>
                     </tr>
@@ -140,9 +140,9 @@ const StudentList = () => {
                     {students.length > 0 ? (
                         students.map(student => (
                             <tr key={student.id}>
-                                <td>{student.firstname || student.Firstname}</td>
-                                <td>{student.lastname || student.Lastname}</td>
-                                <td>{formatDate(student.birthDate || student.BirthDate)}</td>
+                                <td>{student.firstName}</td>
+                                <td>{student.lastName}</td>
+                                <td>{formatDate(student.dateOfBirth)}</td>
                                 <td>
                                     <Link 
                                         to={`/editstudent/${student.id}`} 
