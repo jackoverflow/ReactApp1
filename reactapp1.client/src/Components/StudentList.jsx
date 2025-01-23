@@ -108,6 +108,9 @@ const StudentList = () => {
                 <Link to="/addstudent" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Student
                 </Link>
+                <Link to="/addsubject" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+                    Add New Subject
+                </Link>
                 <button 
                     className="btn btn-success" 
                     style={{ height: '40px' }} 
