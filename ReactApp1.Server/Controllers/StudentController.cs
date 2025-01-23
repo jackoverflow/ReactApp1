@@ -59,10 +59,10 @@ public class StudentController : ControllerBase
             }
 
             using var connection = new NpgsqlConnection(_connectionString);
-            var query = "INSERT INTO public.Students (Firstname, Lastname, BirthDate) VALUES (@Firstname, @Lastname, @BirthDate) RETURNING *";
+            var query = "INSERT INTO public.Students (FirstName, LastName, DateOfBirth) VALUES (@FirstName, @LastName, @DateOfBirth) RETURNING *";
             var addedStudent = await connection.QuerySingleAsync<Student>(query, student);
 
-            return CreatedAtAction(nameof(GetStudent), new { id = addedStudent.ID }, addedStudent);
+            return CreatedAtAction(nameof(GetStudent), new { id = addedStudent.Id }, addedStudent);
         }
         catch (Exception ex)
         {
@@ -73,7 +73,7 @@ public class StudentController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateStudent(int id, [FromBody] Student student)
     {
-        if (student == null || student.ID != id)
+        if (student == null || student.Id != id)
         {
             return BadRequest("Student data is invalid.");
         }
@@ -126,9 +126,9 @@ public class StudentController : ControllerBase
         var row = 2;
         foreach (var student in students)
         {
-            worksheet.Cell(row, 1).Value = student.Firstname;
-            worksheet.Cell(row, 2).Value = student.Lastname;
-            worksheet.Cell(row, 3).Value = student.BirthDate.ToString("MMM-dd-yyyy");
+            worksheet.Cell(row, 1).Value = student.FirstName;
+            worksheet.Cell(row, 2).Value = student.LastName;
+            worksheet.Cell(row, 3).Value = student.DateOfBirth.ToString("MMM-dd-yyyy");
             row++;
         }
 
@@ -191,10 +191,10 @@ public class StudentController : ControllerBase
         try
         {
             using var connection = new NpgsqlConnection(_connectionString);
-            var query = "INSERT INTO public.Subjects (Name, Description, StudentID) VALUES (@Name, @Description, @StudentID) RETURNING *";
+            var query = "INSERT INTO public.Subjects (ShortName, Description, StudentID) VALUES (@ShortName, @Description, @StudentID) RETURNING *";
             var addedSubject = await connection.QuerySingleAsync<Subject>(query, subject);
 
-            return CreatedAtAction(nameof(GetSubjectById), new { id = addedSubject.ID }, addedSubject);
+            return CreatedAtAction(nameof(GetSubjectById), new { id = addedSubject.Id }, addedSubject);
         }
         catch (Exception ex)
         {

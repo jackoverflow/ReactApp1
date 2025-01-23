@@ -9,7 +9,7 @@ namespace ReactApp1.Server.Models
         public DateTime DateEnrolled { get; set; }
 
         // Navigation properties (optional)
-        public Student Student { get; set; } // Navigation property to Student
-        public Subject Subject { get; set; } // Navigation property to Subject
+        public Student? Student { get; set; } // Make this nullable
+        public Subject? Subject { get; set; } // Make this nullable
     }
 }

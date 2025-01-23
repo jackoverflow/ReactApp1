@@ -27,7 +27,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Initialize the database
-Initialize(app.Configuration.GetConnectionString("DefaultConnection"));
+Initialize(app.Configuration.GetConnectionString("DefaultConnection") ?? 
+    throw new InvalidOperationException("Connection string 'DefaultConnection' not found."));
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -52,6 +53,11 @@ app.Run();
 
 void Initialize(string connectionString)
 {
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        throw new ArgumentNullException(nameof(connectionString), "Connection string cannot be null or empty.");
+    }
+
     using var connection = new NpgsqlConnection(connectionString);
     
     // Check if the table exists
