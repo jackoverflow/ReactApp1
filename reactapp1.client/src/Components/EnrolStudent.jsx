@@ -85,6 +85,8 @@ const EnrolStudent = () => {
             subjectIds: selectedSubjects
         };
 
+        console.log('Enrollment Data:', enrollmentData); // Log the data being sent
+
         try {
             const response = await axios.post('http://localhost:5077/api/student/enrol', enrollmentData);
             if (response.status === 201) {
