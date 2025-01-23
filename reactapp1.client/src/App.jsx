@@ -4,6 +4,7 @@ import StudentList from './Components/StudentList';
 import AddStudent from './Components/AddStudent';
 import EditStudent from './Components/EditStudent';
 import AddSubject from './Components/AddSubject';
+import SubjectList from './Components/SubjectList';
 
 const App = () => {
     return (
@@ -13,6 +14,7 @@ const App = () => {
                 <Route path="/addstudent" element={<AddStudent />} />
                 <Route path="/editstudent/:id" element={<EditStudent />} />
                 <Route path="/addsubject" element={<AddSubject />} />
+                <Route path="/subjects" element={<SubjectList />} />
                 <Route path="/" element={<Navigate to="/students" />} />
             </Routes>
         </Router>

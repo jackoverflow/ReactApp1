@@ -5,6 +5,7 @@ using ReactApp1.Server.Models;
 using ClosedXML.Excel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace ReactApp1.Server.Controllers;
 
@@ -214,5 +215,88 @@ public class StudentController : ControllerBase
             return NotFound();
         }
         return subject;
+    }
+
+    [HttpGet("subjects")]
+    public async Task<ActionResult<IEnumerable<Subject>>> GetSubjects(
+        string searchTerm = "", 
+        int pageNumber = 1, 
+        int pageSize = 10)
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        
+        var query = @"SELECT * FROM public.Subjects 
+                     WHERE (ShortName ILIKE @SearchPattern OR Description ILIKE @SearchPattern)
+                     ORDER BY ShortName ASC
+                     OFFSET @Offset LIMIT @Limit";
+
+        var parameters = new DynamicParameters();
+        parameters.Add("SearchPattern", $"%{searchTerm}%");
+        parameters.Add("Offset", (pageNumber - 1) * pageSize);
+        parameters.Add("Limit", pageSize);
+
+        var subjects = await connection.QueryAsync<Subject>(query, parameters);
+
+        return Ok(subjects);
+    }
+
+    [HttpGet("subjects/count")]
+    public async Task<ActionResult<int>> GetSubjectsCount()
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        var count = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM public.Subjects");
+        return Ok(count);
+    }
+
+    [HttpDelete("subject/{id}")]
+    public async Task<IActionResult> DeleteSubject(int id)
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        var affectedRows = await connection.ExecuteAsync(
+            "DELETE FROM public.Subjects WHERE Id = @Id", 
+            new { Id = id });
+
+        if (affectedRows == 0)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpPost("enrol")]
+    public async Task<IActionResult> EnrolStudent([FromBody] EnrollmentRequest enrollmentRequest)
+    {
+        if (enrollmentRequest == null || enrollmentRequest.SubjectIds == null || !enrollmentRequest.SubjectIds.Any())
+        {
+            return BadRequest("Invalid enrollment data.");
+        }
+
+        using var connection = new NpgsqlConnection(_connectionString);
+        var transaction = await connection.BeginTransactionAsync();
+
+        try
+        {
+            foreach (var subjectId in enrollmentRequest.SubjectIds)
+            {
+                var query = "INSERT INTO public.StudentSubject (StudentId, SubjectId) VALUES (@StudentId, @SubjectId)";
+                await connection.ExecuteAsync(query, new { StudentId = enrollmentRequest.StudentId, SubjectId = subjectId }, transaction);
+            }
+
+            await transaction.CommitAsync();
+            return CreatedAtAction(nameof(GetStudent), new { id = enrollmentRequest.StudentId }, null);
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
+    // Create a class to represent the enrollment request
+    public class EnrollmentRequest
+    {
+        public int StudentId { get; set; }
+        public List<int> SubjectIds { get; set; }
     }
 }
