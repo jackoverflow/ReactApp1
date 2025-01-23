@@ -98,7 +98,7 @@ const EnrolStudent = () => {
             }
         } catch (error) {
             console.error('Error enrolling student:', error);
-            toast.error('Failed to enroll student.');
+            toast.error('Failed to enroll student. Please check the console for more details.');
         }
     };
 
