@@ -7,11 +7,13 @@ import { useNavigate } from 'react-router-dom';
 const EnrolStudent = () => {
     const navigate = useNavigate();
     const [students, setStudents] = useState([]);
+    const [filteredStudents, setFilteredStudents] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [subjects, setSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -42,6 +44,23 @@ const EnrolStudent = () => {
         setSelectedStudent(student);
         setFirstName(student.firstName);
         setLastName(student.lastName);
+        setSearchTerm(''); // Clear the search term
+        setFilteredStudents([]); // Clear the filtered list
+    };
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        if (value) {
+            const filtered = students.filter(student =>
+                student.firstName.toLowerCase().includes(value.toLowerCase()) ||
+                student.lastName.toLowerCase().includes(value.toLowerCase())
+            );
+            setFilteredStudents(filtered);
+        } else {
+            setFilteredStudents([]);
+        }
     };
 
     const handleSubjectChange = (subjectId) => {
@@ -94,15 +113,23 @@ const EnrolStudent = () => {
                         type="text"
                         className="form-control"
                         placeholder="Search by Firstname or Lastname"
-                        onChange={(e) => {
-                            const searchTerm = e.target.value.toLowerCase();
-                            const filteredStudents = students.filter(student =>
-                                student.firstName.toLowerCase().includes(searchTerm) ||
-                                student.lastName.toLowerCase().includes(searchTerm)
-                            );
-                            setStudents(filteredStudents);
-                        }}
+                        value={searchTerm}
+                        onChange={handleSearchChange}
                     />
+                    {filteredStudents.length > 0 && (
+                        <ul className="list-group">
+                            {filteredStudents.map(student => (
+                                <li
+                                    key={student.id}
+                                    className="list-group-item"
+                                    onClick={() => handleStudentSelect(student)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {student.firstName} {student.lastName}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
                 <div className="form-group mb-3">
                     <label>Selected Student:</label>
