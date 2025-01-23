@@ -1,22 +1,31 @@
 -- InitialSchema.sql
 
 -- Drop existing tables if they exist
+DROP TABLE IF EXISTS public.StudentSubject;
 DROP TABLE IF EXISTS public.Subjects;
 DROP TABLE IF EXISTS public.Students;
 
 -- Create Students table
 CREATE TABLE public.Students (
-    ID SERIAL PRIMARY KEY,
-    Firstname VARCHAR(100) CONSTRAINT nn_firstname NOT NULL,
-    Lastname VARCHAR(100) CONSTRAINT nn_lastname NOT NULL,
-    BirthDate DATE CONSTRAINT nn_birthdate NOT NULL
+    Id SERIAL PRIMARY KEY,
+    FirstName VARCHAR(100) NOT NULL,
+    LastName VARCHAR(100) NOT NULL,
+    DateOfBirth DATE NOT NULL
 );
 
 -- Create Subjects table
 CREATE TABLE public.Subjects (
-    ID SERIAL PRIMARY KEY,
-    Name VARCHAR(100) CONSTRAINT nn_name NOT NULL,
-    Description VARCHAR(255),
-    StudentID INT NULL,
-    CONSTRAINT fk_student_id FOREIGN KEY (StudentID) REFERENCES public.Students(ID) ON DELETE SET NULL
+    Id SERIAL PRIMARY KEY,
+    ShortName VARCHAR(100) NOT NULL,
+    Description VARCHAR(255)
+);
+
+-- Create StudentSubject join table
+CREATE TABLE public.StudentSubject (
+    StudentId INT NOT NULL,
+    SubjectId INT NOT NULL,
+    DateEnrolled TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (StudentId, SubjectId),
+    FOREIGN KEY (StudentId) REFERENCES public.Students(Id) ON DELETE CASCADE,
+    FOREIGN KEY (SubjectId) REFERENCES public.Subjects(Id) ON DELETE CASCADE
 );
