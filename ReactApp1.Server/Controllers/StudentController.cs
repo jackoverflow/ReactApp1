@@ -273,10 +273,12 @@ public class StudentController : ControllerBase
         }
 
         using var connection = new NpgsqlConnection(_connectionString);
-        var transaction = await connection.BeginTransactionAsync();
-
+        
         try
         {
+            await connection.OpenAsync(); // Ensure the connection is open
+            var transaction = await connection.BeginTransactionAsync();
+
             foreach (var subjectId in enrollmentRequest.SubjectIds)
             {
                 var query = "INSERT INTO public.StudentSubject (StudentId, SubjectId) VALUES (@StudentId, @SubjectId)";
@@ -288,7 +290,6 @@ public class StudentController : ControllerBase
         }
         catch (Exception ex)
         {
-            await transaction.RollbackAsync();
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
