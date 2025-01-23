@@ -5,6 +5,7 @@ import AddStudent from './Components/AddStudent';
 import EditStudent from './Components/EditStudent';
 import AddSubject from './Components/AddSubject';
 import SubjectList from './Components/SubjectList';
+import EnrolStudent from './Components/EnrolStudent';
 
 const App = () => {
     return (
@@ -15,6 +16,7 @@ const App = () => {
                 <Route path="/editstudent/:id" element={<EditStudent />} />
                 <Route path="/addsubject" element={<AddSubject />} />
                 <Route path="/subjects" element={<SubjectList />} />
+                <Route path="/enrol" element={<EnrolStudent />} />
                 <Route path="/" element={<Navigate to="/students" />} />
             </Routes>
         </Router>
