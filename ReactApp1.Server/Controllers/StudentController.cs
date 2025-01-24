@@ -295,14 +295,34 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id}/subjects")]
-    public async Task<ActionResult<IEnumerable<Subject>>> GetEnrolledSubjects(int id)
+    public async Task<ActionResult<StudentWithSubjects>> GetEnrolledSubjects(int id)
     {
         using var connection = new NpgsqlConnection(_connectionString);
+        
+        // Get the student details
+        var studentQuery = "SELECT FirstName, LastName FROM public.Students WHERE Id = @StudentId";
+        var student = await connection.QueryFirstOrDefaultAsync<Student>(studentQuery, new { StudentId = id });
+
+        if (student == null)
+        {
+            return NotFound();
+        }
+
+        // Get the subjects associated with the student
         var query = @"SELECT s.* FROM public.Subjects s
                       INNER JOIN public.StudentSubject ss ON s.Id = ss.SubjectId
                       WHERE ss.StudentId = @StudentId";
         var subjects = await connection.QueryAsync<Subject>(query, new { StudentId = id });
-        return Ok(subjects);
+
+        // Create the response object
+        var response = new StudentWithSubjects
+        {
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            Subjects = subjects.ToList()
+        };
+
+        return Ok(response);
     }
 
     // Create a class to represent the enrollment request

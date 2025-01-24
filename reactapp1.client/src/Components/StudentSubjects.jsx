@@ -5,13 +5,13 @@ import { toast } from 'react-hot-toast';
 
 const StudentSubjects = () => {
     const { id } = useParams();
-    const [subjects, setSubjects] = useState([]);
+    const [studentInfo, setStudentInfo] = useState({ firstName: '', lastName: '', subjects: [] });
 
     useEffect(() => {
         const fetchStudentSubjects = async () => {
             try {
                 const response = await axios.get(`http://localhost:5077/api/student/${id}/subjects`);
-                setSubjects(response.data);
+                setStudentInfo(response.data);
             } catch (error) {
                 console.error('Error fetching student subjects:', error);
                 toast.error('Failed to fetch student subjects.');
@@ -23,11 +23,11 @@ const StudentSubjects = () => {
 
     return (
         <div className="container mt-4">
-            <h2>Subjects for Student ID: {id}</h2>
+            <h2>Subjects for {studentInfo.firstName} {studentInfo.lastName}</h2>
             <Link to="/students" className="btn btn-secondary mb-3">Back to Student List</Link>
             <ul className="list-group">
-                {subjects.length > 0 ? (
-                    subjects.map(subject => (
+                {studentInfo.subjects.length > 0 ? (
+                    studentInfo.subjects.map(subject => (
                         <li key={subject.id} className="list-group-item">
                             {subject.shortName} - {subject.description}
                         </li>
