@@ -51,9 +51,13 @@ const EnrolStudent = () => {
         // Fetch subjects already associated with the student
         try {
             const response = await axios.get(`http://localhost:5077/api/student/${student.id}/subjects`);
-            const enrolledSubjectIds = response.data.map(subject => subject.id);
-            // Filter out subjects that are already associated with the student
-            setSubjects(prevSubjects => prevSubjects.filter(subject => !enrolledSubjectIds.includes(subject.id)));
+            if (Array.isArray(response.data)) {
+                const enrolledSubjectIds = response.data.map(subject => subject.id);
+                // Filter out subjects that are already associated with the student
+                setSubjects(prevSubjects => prevSubjects.filter(subject => !enrolledSubjectIds.includes(subject.id)));
+            } else {
+                toast.error('Unexpected response format for enrolled subjects.');
+            }
         } catch (error) {
             console.error('Error fetching enrolled subjects:', error);
             toast.error('Failed to fetch enrolled subjects.');
