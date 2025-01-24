@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface Subject {
     id: number;
@@ -31,6 +32,29 @@ const SubjectList = () => {
         navigate(`/editsubject/${id}`);
     };
 
+    const handleDelete = async (id: number) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.delete(`http://localhost:5077/api/student/subject/${id}`);
+                setSubjects(subjects.filter(subject => subject.id !== id));
+                toast.success('Subject deleted successfully!');
+            } catch (error) {
+                console.error('Error deleting subject:', error);
+                toast.error('Failed to delete subject.');
+            }
+        }
+    };
+
     return (
         <div className="container mt-4">
             <h2>Subject List</h2>
@@ -54,6 +78,13 @@ const SubjectList = () => {
                                     className="btn btn-warning"
                                 >
                                     Edit
+                                </button>
+                                <button 
+                                    onClick={() => handleDelete(subject.id)} 
+                                    className="btn btn-danger" 
+                                    style={{ marginLeft: '5px' }}
+                                >
+                                    Delete
                                 </button>
                             </td>
                         </tr>
