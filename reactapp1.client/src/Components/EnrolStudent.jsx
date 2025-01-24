@@ -107,7 +107,7 @@ const EnrolStudent = () => {
             if (response.status === 201) {
                 await Swal.fire({
                     title: 'Success!',
-                    text: 'Student enrolled successfully.',
+                    text: 'Student enrollment updated successfully.',
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
@@ -115,7 +115,7 @@ const EnrolStudent = () => {
             }
         } catch (error) {
             console.error('Error enrolling student:', error);
-            toast.error('Failed to enroll student. Please check the console for more details.');
+            toast.error('Failed to update student enrollment. Please check the console for more details.');
         }
     };
 
@@ -169,6 +169,9 @@ const EnrolStudent = () => {
                                     id={`subject-${subject.id}`}
                                     checked={selectedSubjects.includes(subject.id)}
                                     onChange={() => handleSubjectChange(subject.id)}
+                                    style={{
+                                        backgroundColor: selectedSubjects.includes(subject.id) ? 'yellow' : 'transparent'
+                                    }}
                                 />
                                 <label htmlFor={`subject-${subject.id}`} style={{ marginLeft: '5px' }}>
                                     {subject.shortName}
@@ -178,7 +181,7 @@ const EnrolStudent = () => {
                     </div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                    <button type="submit" className="btn btn-primary">Enroll Student</button>
+                    <button type="submit" className="btn btn-primary">Update Enrollment</button>
                     <Link to="/students" className="btn btn-secondary">Back to List</Link>
                 </div>
             </form>
