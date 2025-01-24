@@ -325,6 +325,26 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    [HttpPut("subject/{id}")]
+    public async Task<IActionResult> UpdateSubject(int id, [FromBody] Subject subject)
+    {
+        if (subject == null || subject.Id != id)
+        {
+            return BadRequest("Subject data is invalid.");
+        }
+
+        using var connection = new NpgsqlConnection(_connectionString);
+        var query = "UPDATE public.Subjects SET ShortName = @ShortName, Description = @Description WHERE ID = @Id";
+        var affectedRows = await connection.ExecuteAsync(query, subject);
+
+        if (affectedRows == 0)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
     // Create a class to represent the enrollment request
     public class EnrollmentRequest
     {

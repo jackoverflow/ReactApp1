@@ -121,7 +121,7 @@ const EnrolStudent = () => {
             <h2>Enroll Student</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group mb-3">
-                    <label htmlFor="student-search">Search Student:</label>
+                    <label htmlFor="student-search"><strong>Search Student:</strong></label>
                     <input
                         id="student-search"
                         type="text"
@@ -157,7 +157,7 @@ const EnrolStudent = () => {
                     )}
                 </div>
                 <div className="form-group mb-3">
-                    <label>Select Subjects:</label>
+                    <label><strong>Select Subjects:</strong></label>
                     <div>
                         {subjects.map(subject => (
                             <div key={subject.id} style={{ marginBottom: '5px' }}>
@@ -174,12 +174,11 @@ const EnrolStudent = () => {
                         ))}
                     </div>
                 </div>
-                <button type="submit" className="btn btn-primary">Enroll Student</button>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                    <button type="submit" className="btn btn-primary">Enroll Student</button>
+                    <Link to="/students" className="btn btn-secondary">Back to List</Link>
+                </div>
             </form>
-            {/* Add Back to List button */}
-            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                <Link to="/students" className="btn btn-secondary">Back to List</Link>
-            </div>
         </div>
     );
 };
