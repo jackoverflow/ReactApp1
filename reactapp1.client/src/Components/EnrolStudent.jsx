@@ -97,25 +97,23 @@ const EnrolStudent = () => {
             return;
         }
 
-        const enrollmentData = {
-            studentId: selectedStudent.id,
-            subjectIds: selectedSubjects
-        };
-
         try {
-            const response = await axios.post('http://localhost:5077/api/student/enrol', enrollmentData);
-            if (response.status === 201) {
-                await Swal.fire({
-                    title: 'Success!',
-                    text: 'Student enrollment updated successfully.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-                navigate('/students'); // Redirect to student list
-            }
+            // Prepare the subject IDs to be updated
+            const subjectsToUpdate = selectedSubjects;
+
+            // Call the new API method to update the subjects for the student
+            await axios.put(`http://localhost:5077/api/student/${selectedStudent.id}/subjects`, subjectsToUpdate);
+
+            await Swal.fire({
+                title: 'Success!',
+                text: 'Student subjects updated successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+            navigate('/students'); // Redirect to student list
         } catch (error) {
-            console.error('Error enrolling student:', error);
-            toast.error('Failed to update student enrollment. Please check the console for more details.');
+            console.error('Error updating student subjects:', error);
+            toast.error('Failed to update student subjects. Please check the console for more details.');
         }
     };
 

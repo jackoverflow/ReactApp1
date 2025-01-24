@@ -333,6 +333,41 @@ public class StudentController : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("{studentId}/subjects")]
+    public async Task<IActionResult> UpdateStudentSubjects(int studentId, [FromBody] List<int> subjectIds)
+    {
+        if (subjectIds == null || !subjectIds.Any())
+        {
+            return BadRequest("No subjects provided.");
+        }
+
+        using var connection = new NpgsqlConnection(_connectionString);
+        
+        try
+        {
+            await connection.OpenAsync(); // Ensure the connection is open
+            var transaction = await connection.BeginTransactionAsync();
+
+            // First, remove all existing subjects for the student
+            var deleteQuery = "DELETE FROM public.StudentSubject WHERE StudentId = @StudentId";
+            await connection.ExecuteAsync(deleteQuery, new { StudentId = studentId }, transaction);
+
+            // Then, add the new subjects
+            foreach (var subjectId in subjectIds)
+            {
+                var insertQuery = "INSERT INTO public.StudentSubject (StudentId, SubjectId) VALUES (@StudentId, @SubjectId)";
+                await connection.ExecuteAsync(insertQuery, new { StudentId = studentId, SubjectId = subjectId }, transaction);
+            }
+
+            await transaction.CommitAsync();
+            return NoContent(); // Return 204 No Content on successful update
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
     // Create a class to represent the enrollment request
     public class EnrollmentRequest
     {
