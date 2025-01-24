@@ -12,11 +12,12 @@ const StudentSubjects = () => {
         const fetchStudentSubjects = async () => {
             try {
                 const response = await axios.get(`http://localhost:5077/api/student/${id}/subjects`);
-                if (Array.isArray(response.data)) {
-                    setStudentInfo(prev => ({
-                        ...prev,
-                        subjects: response.data
-                    }));
+                if (response.data && response.data.subjects) {
+                    setStudentInfo({
+                        firstName: response.data.firstName,
+                        lastName: response.data.lastName,
+                        subjects: response.data.subjects
+                    });
                 } else {
                     toast.error('Unexpected response format for subjects.');
                 }
