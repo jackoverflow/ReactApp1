@@ -47,6 +47,11 @@ const AddStudent = () => {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
+
+                // Redirect to Student List after 1.5 seconds
+                setTimeout(() => {
+                    navigate('/students');
+                }, 1500);
             } else {
                 const errorText = await response.text();
                 console.log('Error response:', errorText);
@@ -117,13 +122,9 @@ const AddStudent = () => {
                                     <button type="submit" className="btn btn-primary">
                                         Add Student
                                     </button>
-                                    <button 
-                                        type="button" 
-                                        className="btn btn-secondary"
-                                        onClick={() => navigate('/students')}
-                                    >
+                                    <Link to="/students" className="btn btn-secondary" style={{ marginLeft: '10px' }}>
                                         Cancel
-                                    </button>
+                                    </Link>
                                 </div>
                             </form>
                         </div>
