@@ -114,3 +114,13 @@
     padding: 15px;
     font-size: 14px;
 }
+
+.btn-yellow-orange {
+    background-color: #FFA500; /* Orange color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+}
+
+.btn-yellow-orange:hover {
+    background-color: #FF8C00; /* Darker orange on hover */
+}

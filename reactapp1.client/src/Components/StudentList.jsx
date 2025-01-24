@@ -111,7 +111,7 @@ const StudentList = () => {
                 <Link to="/addsubject" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Subject
                 </Link>
-                <Link to="/enrol" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+                <Link to="/enrol" className="btn btn-yellow-orange" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Enroll Student
                 </Link>
                 <Link to="/subjects" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
