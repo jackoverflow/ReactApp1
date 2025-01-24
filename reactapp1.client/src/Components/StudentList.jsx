@@ -61,7 +61,7 @@ const StudentList = () => {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5077/api/Student/${id}`);
+                await axios.delete(`http://localhost:5077/api/student/${id}`);
                 setStudents(students.filter(student => student.id !== id));
                 toast.success('Student deleted successfully!');
             } catch (error) {
@@ -156,7 +156,6 @@ const StudentList = () => {
                                     <Link 
                                         to={`/editstudent/${student.id}`} 
                                         className="btn btn-warning"
-                                        state={{ student: student }}
                                     >
                                         Edit
                                     </Link>

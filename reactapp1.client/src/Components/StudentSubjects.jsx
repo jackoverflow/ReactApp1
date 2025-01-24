@@ -6,20 +6,32 @@ import { toast } from 'react-hot-toast';
 const StudentSubjects = () => {
     const { id } = useParams();
     const [studentInfo, setStudentInfo] = useState({ firstName: '', lastName: '', subjects: [] });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchStudentSubjects = async () => {
             try {
                 const response = await axios.get(`http://localhost:5077/api/student/${id}/subjects`);
-                setStudentInfo(response.data);
+                if (Array.isArray(response.data)) {
+                    setStudentInfo(prev => ({
+                        ...prev,
+                        subjects: response.data
+                    }));
+                } else {
+                    toast.error('Unexpected response format for subjects.');
+                }
             } catch (error) {
                 console.error('Error fetching student subjects:', error);
                 toast.error('Failed to fetch student subjects.');
+            } finally {
+                setLoading(false);
             }
         };
 
         fetchStudentSubjects();
     }, [id]);
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="container mt-4">
