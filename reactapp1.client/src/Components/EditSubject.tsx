@@ -12,7 +12,7 @@ const EditSubject = () => {
     useEffect(() => {
         const fetchSubject = async () => {
             try {
-                const response = await axios.get(`http://localhost:5077/api/subject/${id}`);
+                const response = await axios.get(`http://localhost:5077/api/student/subject/${id}`);
                 setSubject(response.data);
                 setLoading(false);
             } catch (error) {
@@ -32,9 +32,9 @@ const EditSubject = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:5077/api/subject/${id}`, subject);
+            await axios.put(`http://localhost:5077/api/student/subject/${id}`, subject);
             toast.success('Subject updated successfully!');
-            navigate('/subjects'); // Redirect to the subject list
+            navigate('/subjects');
         } catch (error) {
             console.error('Error updating subject:', error);
             toast.error('Failed to update subject.');
