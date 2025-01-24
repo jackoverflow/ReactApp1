@@ -7,6 +7,7 @@ import AddSubject from './Components/AddSubject';
 import SubjectList from './Components/SubjectList';
 import EnrolStudent from './Components/EnrolStudent';
 import StudentSubjects from './Components/StudentSubjects';
+import EditSubject from './Components/EditSubject';
 
 const App = () => {
     return (
@@ -19,6 +20,7 @@ const App = () => {
                 <Route path="/subjects" element={<SubjectList />} />
                 <Route path="/enrol" element={<EnrolStudent />} />
                 <Route path="/studentsubjects/:id" element={<StudentSubjects />} />
+                <Route path="/editsubject/:id" element={<EditSubject />} />
                 <Route path="/" element={<Navigate to="/students" />} />
             </Routes>
         </Router>
