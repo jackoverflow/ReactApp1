@@ -83,9 +83,9 @@ const EnrolStudent = () => {
     const handleSubjectChange = (subjectId) => {
         setSelectedSubjects(prevSelected => {
             if (prevSelected.includes(subjectId)) {
-                return prevSelected.filter(id => id !== subjectId);
+                return prevSelected.filter(id => id !== subjectId); // Unenroll if unchecked
             } else {
-                return [...prevSelected, subjectId];
+                return [...prevSelected, subjectId]; // Enroll if checked
             }
         });
     };

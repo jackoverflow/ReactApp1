@@ -36,7 +36,7 @@ const StudentSubjects = () => {
 
     return (
         <div className="container mt-4">
-            <h2>Subjects for {studentInfo.firstName} {studentInfo.lastName}</h2>
+            <h2>Subjects for <strong>{studentInfo.firstName}</strong> <strong>{studentInfo.lastName}</strong></h2>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 <Link to="/students" className="btn btn-secondary">Back to Student List</Link>
             </div>
