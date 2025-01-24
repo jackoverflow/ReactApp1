@@ -166,6 +166,13 @@ const StudentList = () => {
                                     >
                                         Delete
                                     </button>
+                                    <Link 
+                                        to={`/studentsubjects/${student.id}`} 
+                                        className="btn btn-info"
+                                        style={{ marginLeft: '5px' }}
+                                    >
+                                        View Subjects
+                                    </Link>
                                 </td>
                             </tr>
                         ))
