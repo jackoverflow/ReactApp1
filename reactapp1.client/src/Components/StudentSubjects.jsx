@@ -24,7 +24,7 @@ const StudentSubjects = () => {
     return (
         <div className="container mt-4">
             <h2>Subjects for {studentInfo.firstName} {studentInfo.lastName}</h2>
-            <Link to="/students" className="btn btn-secondary mb-3">Back to Student List</Link>
+            <Link to="/students" className="btn btn-info mb-3">Back to Student List</Link>
             <ul className="list-group">
                 {studentInfo.subjects.length > 0 ? (
                     studentInfo.subjects.map(subject => (
