@@ -48,10 +48,8 @@ const AddStudent = () => {
                     confirmButtonText: 'OK'
                 });
 
-                // Redirect to Student List after 1.5 seconds
-                setTimeout(() => {
-                    navigate('/students');
-                }, 1500);
+                // Redirect to Student List immediately after pressing OK
+                navigate('/students');
             } else {
                 const errorText = await response.text();
                 console.log('Error response:', errorText);
