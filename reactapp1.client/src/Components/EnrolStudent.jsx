@@ -159,14 +159,16 @@ const EnrolStudent = () => {
                     <label>Select Subjects:</label>
                     <div>
                         {subjects.map(subject => (
-                            <div key={subject.id}>
+                            <div key={subject.id} style={{ marginBottom: '5px' }}>
                                 <input
                                     type="checkbox"
                                     id={`subject-${subject.id}`}
                                     checked={selectedSubjects.includes(subject.id)}
                                     onChange={() => handleSubjectChange(subject.id)}
                                 />
-                                <label htmlFor={`subject-${subject.id}`}>{subject.shortName}</label>
+                                <label htmlFor={`subject-${subject.id}`} style={{ marginLeft: '5px' }}>
+                                    {subject.shortName}
+                                </label>
                             </div>
                         ))}
                     </div>
