@@ -12,14 +12,14 @@ const StudentSubjects = () => {
         const fetchStudentSubjects = async () => {
             try {
                 const response = await axios.get(`http://localhost:5077/api/student/${id}/subjects`);
-                if (response.data && response.data.subjects) {
+                if (response.data) {
                     setStudentInfo({
                         firstName: response.data.firstName,
                         lastName: response.data.lastName,
-                        subjects: response.data.subjects
+                        subjects: response.data.subjects || []
                     });
                 } else {
-                    toast.error('Unexpected response format for subjects.');
+                    toast.error('Unexpected response format for student data.');
                 }
             } catch (error) {
                 console.error('Error fetching student subjects:', error);
@@ -39,7 +39,6 @@ const StudentSubjects = () => {
             <h2>Subjects for {studentInfo.firstName} {studentInfo.lastName}</h2>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 <Link to="/students" className="btn btn-secondary">Back to Student List</Link>
-                <Link to="/students" className="btn btn-info">Back to List</Link>
             </div>
             <ul className="list-group">
                 {studentInfo.subjects.length > 0 ? (
