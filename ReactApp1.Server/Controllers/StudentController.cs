@@ -314,7 +314,15 @@ public class StudentController : ControllerBase
                       WHERE ss.StudentId = @StudentId";
         var subjects = await connection.QueryAsync<Subject>(query, new { StudentId = id });
 
-        return Ok(subjects.ToList());
+        // Create a response object that includes student info and subjects
+        var response = new StudentWithSubjects
+        {
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            Subjects = subjects.ToList()
+        };
+
+        return Ok(response);
     }
 
     [HttpPut("subject/{id}")]

@@ -16,7 +16,7 @@ const StudentSubjects = () => {
                     setStudentInfo({
                         firstName: response.data.firstName,
                         lastName: response.data.lastName,
-                        subjects: response.data.subjects || []
+                        subjects: response.data.subjects || [] // Ensure this is an array
                     });
                 } else {
                     toast.error('Unexpected response format for student data.');
