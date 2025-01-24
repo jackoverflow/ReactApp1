@@ -60,6 +60,7 @@ const SubjectList = () => {
                     ))}
                 </tbody>
             </table>
+            <Link to="/students" className="btn btn-secondary mt-3">Back to List</Link>
         </div>
     );
 };
