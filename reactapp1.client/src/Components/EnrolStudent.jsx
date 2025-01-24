@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './StudentList.css';
 
 const EnrolStudent = () => {
@@ -69,7 +69,7 @@ const EnrolStudent = () => {
                 student.firstName.toLowerCase().includes(value.toLowerCase()) ||
                 student.lastName.toLowerCase().includes(value.toLowerCase())
             );
-            setFilteredStudents(filteored);
+            setFilteredStudents(filtered);
         } else {
             setFilteredStudents([]);
         }
@@ -93,7 +93,7 @@ const EnrolStudent = () => {
         }
 
         const enrollmentData = {
-            studentId: selectedStudenot.id,
+            studentId: selectedStudent.id,
             subjectIds: selectedSubjects
         };
 
@@ -154,7 +154,7 @@ const EnrolStudent = () => {
                         </ul>
                     ) : (
                         <p>No student selected</p>
-                    )}o
+                    )}
                 </div>
                 <div className="form-group mb-3">
                     <label>Select Subjects:</label>
@@ -176,6 +176,7 @@ const EnrolStudent = () => {
                 </div>
                 <button type="submit" className="btn btn-primary">Enroll Student</button>
             </form>
+            <Link to="/students" className="btn btn-secondary mt-3">Back to List</Link>
         </div>
     );
 };
