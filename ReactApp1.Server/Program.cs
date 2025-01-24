@@ -60,20 +60,20 @@ void Initialize(string connectionString)
 
     using var connection = new NpgsqlConnection(connectionString);
     
-    // Check if the table exists
+    // Check if the tables exist and drop them
     var tableExists = connection.QueryFirstOrDefault<bool>(
         "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'students')");
     
-    if (!tableExists)
+    if (tableExists)
     {
-        var script = File.ReadAllText("Database/InitialSchema.sql");
-        // Ensure this line does not cause double schema references
-        // script = script.Replace("CREATE TABLE ", "CREATE TABLE public."); // Comment this out if not needed
-        connection.Execute(script);
-        Console.WriteLine("Database initialized successfully.");
+        // Drop the existing tables
+        connection.Execute("DROP TABLE IF EXISTS public.StudentSubject CASCADE;");
+        connection.Execute("DROP TABLE IF EXISTS public.Subjects CASCADE;");
+        connection.Execute("DROP TABLE IF EXISTS public.Students CASCADE;");
     }
-    else
-    {
-        Console.WriteLine("Tables already exist. Skipping initialization.");
-    }
+
+    // Read and execute the SQL script to create tables
+    var script = File.ReadAllText("Database/InitialSchema.sql");
+    connection.Execute(script);
+    Console.WriteLine("Database initialized successfully.");
 }

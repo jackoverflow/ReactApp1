@@ -41,29 +41,6 @@ const EnrolStudent = () => {
         fetchSubjects();
     }, []);
 
-    const handleStudentSelect = async (student) => {
-        setSelectedStudent(student);
-        setFirstName(student.firstName);
-        setLastName(student.lastName);
-        setSearchTerm(''); // Clear the search term
-        setFilteredStudents([]); // Clear the filtered list
-
-        // Fetch subjects already associated with the student
-        try {
-            const response = await axios.get(`http://localhost:5077/api/student/${student.id}/subjects`);
-            if (Array.isArray(response.data)) {
-                const enrolledSubjectIds = response.data.map(subject => subject.id);
-                // Filter out subjects that are already associated with the student
-                setSubjects(prevSubjects => prevSubjects.filter(subject => !enrolledSubjectIds.includes(subject.id)));
-            } else {
-                toast.error('Unexpected response format for enrolled subjects.');
-            }
-        } catch (error) {
-            console.error('Error fetching enrolled subjects:', error);
-            toast.error('Failed to fetch enrolled subjects.');
-        }
-    };
-
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -77,6 +54,30 @@ const EnrolStudent = () => {
         } else {
             setFilteredStudents([]);
         }
+    };
+
+    const handleStudentSelect = (student) => {
+        setSelectedStudent(student);
+        setFirstName(student.firstName);
+        setLastName(student.lastName);
+        setSearchTerm(''); // Clear the search term
+        setFilteredStudents([]); // Clear the filtered list
+        setSelectedSubjects([]); // Reset selected subjects
+
+        // Fetch subjects already associated with the student
+        axios.get(`http://localhost:5077/api/student/${student.id}/subjects`)
+            .then(response => {
+                if (Array.isArray(response.data)) {
+                    const enrolledSubjectIds = response.data.map(subject => subject.id);
+                    setSelectedSubjects(enrolledSubjectIds); // Set already enrolled subjects
+                } else {
+                    toast.error('Unexpected response format for enrolled subjects.');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching enrolled subjects:', error);
+                toast.error('Failed to fetch enrolled subjects.');
+            });
     };
 
     const handleSubjectChange = (subjectId) => {
@@ -100,8 +101,6 @@ const EnrolStudent = () => {
             studentId: selectedStudent.id,
             subjectIds: selectedSubjects
         };
-
-        console.log('Enrollment Data:', enrollmentData); // Log the data being sent
 
         try {
             const response = await axios.post('http://localhost:5077/api/student/enrol', enrollmentData);
