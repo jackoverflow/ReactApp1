@@ -176,7 +176,10 @@ const EnrolStudent = () => {
                 </div>
                 <button type="submit" className="btn btn-primary">Enroll Student</button>
             </form>
-            <Link to="/students" className="btn btn-secondary mt-3">Back to List</Link>
+            {/* Add Back to List button */}
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <Link to="/students" className="btn btn-secondary">Back to List</Link>
+            </div>
         </div>
     );
 };
