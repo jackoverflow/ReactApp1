@@ -30,11 +30,11 @@ const AddStudent = () => {
         const studentData = {
             Firstname: firstname,
             Lastname: lastname,
-            BirthDate: birthDate
+            DateOfBirth: birthDate  // Send the date directly from the input
         };
 
         try {
-            console.log('Sending request...');
+            console.log('Sending student data:', studentData);
             const response = await fetch('http://localhost:5077/api/student', {
                 method: 'POST',
                 headers: {
