@@ -116,15 +116,14 @@ public class StudentController : ControllerBase
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Students and Subjects");
         
-        // Add headers
-        worksheet.Cell(1, 1).Value = "Student ID";
-        worksheet.Cell(1, 2).Value = "First Name";
-        worksheet.Cell(1, 3).Value = "Last Name";
-        worksheet.Cell(1, 4).Value = "Date of Birth";
-        worksheet.Cell(1, 5).Value = "Enrolled Subjects";
+        // Add headers (removed Student ID)
+        worksheet.Cell(1, 1).Value = "First Name";
+        worksheet.Cell(1, 2).Value = "Last Name";
+        worksheet.Cell(1, 3).Value = "Date of Birth";
+        worksheet.Cell(1, 4).Value = "Enrolled Subjects";
 
         // Apply bold style to header row
-        for (int i = 1; i <= 5; i++)
+        for (int i = 1; i <= 4; i++)
         {
             worksheet.Cell(1, i).Style.Font.Bold = true;
         }
@@ -133,17 +132,19 @@ public class StudentController : ControllerBase
         foreach (var student in students)
         {
             var subjectsQuery = @"SELECT s.* FROM public.Subjects s
-                                INNER JOIN public.StudentSubject ss ON s.Id = ss.SubjectId
-                                WHERE ss.StudentId = @StudentId";
+                                  INNER JOIN public.StudentSubject ss ON s.Id = ss.SubjectId
+                                  WHERE ss.StudentId = @StudentId";
             var subjects = await connection.QueryAsync<Subject>(subjectsQuery, new { StudentId = student.Id });
 
-            worksheet.Cell(row, 1).Value = student.Id;
-            worksheet.Cell(row, 2).Value = student.FirstName;
-            worksheet.Cell(row, 3).Value = student.LastName;
-            worksheet.Cell(row, 4).Value = student.DateOfBirth.ToString("yyyy-MM-dd");
-            worksheet.Cell(row, 5).Value = string.Join(", ", subjects.Select(s => s.ShortName));
+            worksheet.Cell(row, 1).Value = student.FirstName;
+            worksheet.Cell(row, 2).Value = student.LastName;
+            worksheet.Cell(row, 3).Value = student.DateOfBirth.ToString("yyyy-MM-dd");
+            worksheet.Cell(row, 4).Value = string.Join(", ", subjects.Select(s => s.ShortName));
             row++;
         }
+
+        // Adjust column widths to fit the content
+        worksheet.Columns().AdjustToContents();
 
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
