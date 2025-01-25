@@ -80,7 +80,7 @@ public class StudentController : ControllerBase
         }
 
         using var connection = new NpgsqlConnection(_connectionString);
-        var query = "UPDATE public.Students SET Firstname = @Firstname, Lastname = @Lastname, BirthDate = @BirthDate WHERE ID = @Id";
+        var query = "UPDATE public.Students SET FirstName = @FirstName, LastName = @LastName, DateOfBirth = @DateOfBirth WHERE ID = @Id";
         var affectedRows = await connection.ExecuteAsync(query, student);
 
         if (affectedRows == 0)

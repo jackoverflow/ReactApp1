@@ -55,7 +55,7 @@ const EditStudent = () => {
             };
             
             console.log('Sending update data:', studentData);
-            await axios.put(`http://localhost:5077/api/student/${id}`, studentData);
+            const response = await axios.put(`http://localhost:5077/api/student/${id}`, studentData);
             toast.success('Student updated successfully!');
             navigate('/students');
         } catch (error) {
