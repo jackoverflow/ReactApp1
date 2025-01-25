@@ -109,45 +109,46 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> GenerateExcel()
     {
         using var connection = new NpgsqlConnection(_connectionString);
-        var students = await connection.QueryAsync<Student>("SELECT * FROM public.Students ORDER BY Lastname ASC");
+        
+        var studentsQuery = "SELECT * FROM public.Students";
+        var students = await connection.QueryAsync<Student>(studentsQuery);
 
         using var workbook = new XLWorkbook();
-        var worksheet = workbook.Worksheets.Add("Students");
+        var worksheet = workbook.Worksheets.Add("Students and Subjects");
+        
+        // Add headers
+        worksheet.Cell(1, 1).Value = "Student ID";
+        worksheet.Cell(1, 2).Value = "First Name";
+        worksheet.Cell(1, 3).Value = "Last Name";
+        worksheet.Cell(1, 4).Value = "Date of Birth";
+        worksheet.Cell(1, 5).Value = "Enrolled Subjects";
 
-        // Add headers and style them
-        var headers = new[] { "Firstname", "Lastname", "BirthDate" };
-        for (int i = 0; i < headers.Length; i++)
+        // Apply bold style to header row
+        for (int i = 1; i <= 5; i++)
         {
-            var cell = worksheet.Cell(1, i + 1);
-            cell.Value = headers[i];
-            cell.Style.Font.Bold = true;
+            worksheet.Cell(1, i).Style.Font.Bold = true;
         }
 
-        // Add student data
-        var row = 2;
+        int row = 2;
         foreach (var student in students)
         {
-            worksheet.Cell(row, 1).Value = student.FirstName;
-            worksheet.Cell(row, 2).Value = student.LastName;
-            worksheet.Cell(row, 3).Value = student.DateOfBirth.ToString("MMM-dd-yyyy");
+            var subjectsQuery = @"SELECT s.* FROM public.Subjects s
+                                INNER JOIN public.StudentSubject ss ON s.Id = ss.SubjectId
+                                WHERE ss.StudentId = @StudentId";
+            var subjects = await connection.QueryAsync<Subject>(subjectsQuery, new { StudentId = student.Id });
+
+            worksheet.Cell(row, 1).Value = student.Id;
+            worksheet.Cell(row, 2).Value = student.FirstName;
+            worksheet.Cell(row, 3).Value = student.LastName;
+            worksheet.Cell(row, 4).Value = student.DateOfBirth.ToString("yyyy-MM-dd");
+            worksheet.Cell(row, 5).Value = string.Join(", ", subjects.Select(s => s.ShortName));
             row++;
-        }
-
-        // Auto-fit columns
-        worksheet.Columns().AdjustToContents();
-
-        // Add 5 characters width to all columns except ID
-        for (int i = 2; i <= 4; i++)
-        {
-            var column = worksheet.Column(i);
-            column.Width = column.Width + 5;
         }
 
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
-        stream.Position = 0;
-
-        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Students.xlsx");
+        var content = stream.ToArray();
+        return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Students.xlsx");
     }
 
     [HttpGet("count")]
@@ -375,10 +376,38 @@ public class StudentController : ControllerBase
         }
     }
 
+    [HttpGet("students-with-subjects")]
+    public async Task<ActionResult<IEnumerable<StudentWithSubjects>>> GetStudentsWithSubjects()
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        
+        var studentsQuery = "SELECT * FROM public.Students";
+        var students = await connection.QueryAsync<Student>(studentsQuery);
+
+        var studentsWithSubjects = new List<StudentWithSubjects>();
+
+        foreach (var student in students)
+        {
+            var subjectsQuery = @"SELECT s.* FROM public.Subjects s
+                                  INNER JOIN public.StudentSubject ss ON s.Id = ss.SubjectId
+                                  WHERE ss.StudentId = @StudentId";
+            var subjects = await connection.QueryAsync<Subject>(subjectsQuery, new { StudentId = student.Id });
+
+            studentsWithSubjects.Add(new StudentWithSubjects
+            {
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Subjects = subjects.ToList()
+            });
+        }
+
+        return Ok(studentsWithSubjects);
+    }
+
     // Create a class to represent the enrollment request
     public class EnrollmentRequest
     {
         public int StudentId { get; set; }
-        public List<int> SubjectIds { get; set; }
+        public List<int> SubjectIds { get; set; } = new List<int>();
     }
 }
