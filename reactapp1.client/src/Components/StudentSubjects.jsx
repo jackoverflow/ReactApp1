@@ -40,17 +40,28 @@ const StudentSubjects = () => {
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 <Link to="/students" className="btn btn-secondary">Back to Student List</Link>
             </div>
-            <ul className="list-group">
-                {studentInfo.subjects.length > 0 ? (
-                    studentInfo.subjects.map(subject => (
-                        <li key={subject.id} className="list-group-item">
-                            {subject.shortName} - {subject.description}
-                        </li>
-                    ))
-                ) : (
-                    <li className="list-group-item">No subjects found for this student.</li>
-                )}
-            </ul>
+            <table className="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {studentInfo.subjects.length > 0 ? (
+                        studentInfo.subjects.map(subject => (
+                            <tr key={subject.id}>
+                                <td>{subject.shortName}</td>
+                                <td>{subject.description}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="2" className="no-data">No subjects found for this student.</td>
+                        </tr>
+                    )}
+                </tbody>
+            </table>
         </div>
     );
 };

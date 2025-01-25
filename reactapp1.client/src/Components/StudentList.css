@@ -114,3 +114,11 @@
     padding: 15px;
     font-size: 14px;
 }
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9; /* Light gray for odd rows */
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: #ffffff; /* White for even rows */
+}
