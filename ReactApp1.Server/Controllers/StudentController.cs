@@ -295,22 +295,29 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id}/subjects")]
-    public async Task<ActionResult<IEnumerable<Subject>>> GetEnrolledSubjects(int id)
+    public async Task<ActionResult<StudentWithSubjects>> GetStudentWithSubjects(int id)
     {
         using var connection = new NpgsqlConnection(_connectionString);
         
-        // Get the subjects associated with the student
-        var query = @"SELECT s.* FROM public.Subjects s
-                      INNER JOIN public.StudentSubject ss ON s.Id = ss.SubjectId
-                      WHERE ss.StudentId = @StudentId";
-        var subjects = await connection.QueryAsync<Subject>(query, new { StudentId = id });
+        var studentQuery = "SELECT * FROM public.Students WHERE ID = @Id";
+        var student = await connection.QueryFirstOrDefaultAsync<Student>(studentQuery, new { Id = id });
 
-        if (subjects == null || !subjects.Any())
+        if (student == null)
         {
-            return NotFound(); // Return 404 if no subjects found
+            return NotFound();
         }
 
-        return Ok(subjects.ToList()); // Return the list of subjects
+        var subjectsQuery = @"SELECT s.* FROM public.Subjects s
+                              INNER JOIN public.StudentSubject ss ON s.Id = ss.SubjectId
+                              WHERE ss.StudentId = @StudentId";
+        var subjects = await connection.QueryAsync<Subject>(subjectsQuery, new { StudentId = id });
+
+        return Ok(new StudentWithSubjects
+        {
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            Subjects = subjects.ToList()
+        });
     }
 
     [HttpPut("subject/{id}")]

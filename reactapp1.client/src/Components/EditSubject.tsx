@@ -72,6 +72,13 @@ const EditSubject = () => {
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Update Subject</button>
+                <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={() => navigate('/students')}
+                >
+                    Back to List
+                </button>
             </form>
         </div>
     );
