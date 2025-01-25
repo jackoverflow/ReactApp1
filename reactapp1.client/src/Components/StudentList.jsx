@@ -111,11 +111,11 @@ const StudentList = () => {
                 <Link to="/addsubject" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Subject
                 </Link>
-                <Link to="/enrol" className="btn btn-info" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
-                    Enroll Student
-                </Link>
                 <Link to="/subjects" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     View Subjects
+                </Link>                
+                <Link to="/enrol" className="btn btn-info" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+                    Enroll Student
                 </Link>
                 <button 
                     className="btn btn-success" 
