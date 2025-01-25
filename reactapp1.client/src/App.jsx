@@ -14,8 +14,8 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/students" element={<StudentList />} />
-                <Route path="/addstudent" element={<AddStudent />} />
-                <Route path="/editstudent/:id" element={<EditStudent />} />
+                <Route path="/add-student" element={<AddStudent />} />
+                <Route path="/edit-student/:id" element={<EditStudent />} />
                 <Route path="/addsubject" element={<AddSubject />} />
                 <Route path="/subjects" element={<SubjectList />} />
                 <Route path="/enrol" element={<EnrolStudent />} />

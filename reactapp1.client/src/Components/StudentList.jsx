@@ -105,7 +105,7 @@ const StudentList = () => {
         <div className="student-container">
             <h1>Student List</h1>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                <Link to="/addstudent" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
+                <Link to="/add-student" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Student
                 </Link>
                 <Link to="/addsubject" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
@@ -154,8 +154,9 @@ const StudentList = () => {
                                 <td>{formatDate(student.dateOfBirth)}</td>
                                 <td>
                                     <Link 
-                                        to={`/editstudent/${student.id}`} 
+                                        to={`/edit-student/${student.id}`}
                                         className="btn btn-warning"
+                                        onClick={() => console.log('Student being edited:', student)}
                                     >
                                         Edit
                                     </Link>

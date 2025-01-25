@@ -7,22 +7,30 @@ import './StudentList.css';
 const EditStudent = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [student, setStudent] = useState({ firstname: '', lastname: '', birthDate: '' });
+    const [student, setStudent] = useState({
+        id: '',
+        firstname: '',
+        lastname: '',
+        birthDate: ''
+    });
 
     // Fetch student data
     useEffect(() => {
         const fetchStudent = async () => {
             try {
-                const response = await axios.get(`http://localhost:5077/api/Student/${id}`);
+                console.log('Fetching student with ID:', id);
+                const response = await axios.get(`http://localhost:5077/api/student/${id}`);
                 const studentData = response.data;
+                console.log('Received student data:', studentData);
+
                 // Format the date when setting the student data
-                const formattedDate = studentData.birthDate ? 
-                    new Date(studentData.birthDate).toISOString().split('T')[0] : '';
+                const formattedDate = studentData.dateOfBirth ? 
+                    new Date(studentData.dateOfBirth).toISOString().split('T')[0] : '';
                 
                 setStudent({
-                    id: studentData.id || studentData.ID,
-                    firstname: studentData.firstname || studentData.Firstname,
-                    lastname: studentData.lastname || studentData.Lastname,
+                    id: studentData.id,
+                    firstname: studentData.firstName,
+                    lastname: studentData.lastName,
                     birthDate: formattedDate
                 });
             } catch (error) {
@@ -31,19 +39,23 @@ const EditStudent = () => {
             }
         };
 
-        fetchStudent();
+        if (id) {
+            fetchStudent();
+        }
     }, [id]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const studentData = {
-                ID: student.id,
-                Firstname: student.firstname,
-                Lastname: student.lastname,
-                BirthDate: student.birthDate
+                id: student.id,
+                firstName: student.firstname,
+                lastName: student.lastname,
+                dateOfBirth: student.birthDate
             };
-            await axios.put(`http://localhost:5077/api/Student/${id}`, studentData);
+            
+            console.log('Sending update data:', studentData);
+            await axios.put(`http://localhost:5077/api/student/${id}`, studentData);
             toast.success('Student updated successfully!');
             navigate('/students');
         } catch (error) {
@@ -51,6 +63,8 @@ const EditStudent = () => {
             toast.error('Failed to update student.');
         }
     };
+
+    console.log('Editing student with ID:', id);
 
     return (
         <div className="container mt-4">
@@ -67,7 +81,7 @@ const EditStudent = () => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        value={student.firstname}
+                                        value={student.firstname || ''}
                                         onChange={(e) => setStudent({ ...student, firstname: e.target.value })}
                                         required
                                     />
@@ -77,7 +91,7 @@ const EditStudent = () => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        value={student.lastname}
+                                        value={student.lastname || ''}
                                         onChange={(e) => setStudent({ ...student, lastname: e.target.value })}
                                         required
                                     />
@@ -87,7 +101,7 @@ const EditStudent = () => {
                                     <input
                                         type="date"
                                         className="form-control"
-                                        value={student.birthDate}
+                                        value={student.birthDate || ''}
                                         onChange={(e) => setStudent({ ...student, birthDate: e.target.value })}
                                         required
                                     />
