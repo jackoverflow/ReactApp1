@@ -43,21 +43,23 @@ const StudentSubjects = () => {
             <table className="table table-striped">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Name</th>
                         <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
                     {studentInfo.subjects.length > 0 ? (
-                        studentInfo.subjects.map(subject => (
+                        studentInfo.subjects.map((subject, index) => (
                             <tr key={subject.id}>
+                                <td>{index + 1}</td>
                                 <td>{subject.shortName}</td>
                                 <td>{subject.description}</td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="2" className="no-data">No subjects found for this student.</td>
+                            <td colSpan="3" className="no-data">No subjects found for this student.</td>
                         </tr>
                     )}
                 </tbody>
