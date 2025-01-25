@@ -10,8 +10,6 @@ const EnrolStudent = () => {
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
     const [selectedStudent, setSelectedStudent] = useState(null);
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
     const [subjects, setSubjects] = useState([]);
     const [selectedSubjects, setSelectedSubjects] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -56,38 +54,35 @@ const EnrolStudent = () => {
         }
     };
 
-    const handleStudentSelect = (student) => {
+    const handleStudentSelect = async (student) => {
         setSelectedStudent(student);
-        setFirstName(student.firstName);
-        setLastName(student.lastName);
         setSearchTerm(''); // Clear the search term
         setFilteredStudents([]); // Clear the filtered list
-        setSelectedSubjects([]); // Reset selected subjects
 
-        // Fetch subjects already associated with the student
-        axios.get(`http://localhost:5077/api/student/${student.id}/subjects`)
-            .then(response => {
-                if (Array.isArray(response.data)) {
-                    const enrolledSubjectIds = response.data.map(subject => subject.id);
-                    setSelectedSubjects(enrolledSubjectIds); // Set already enrolled subjects
-                } else {
-                    toast.error('Unexpected response format for enrolled subjects.');
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching enrolled subjects:', error);
-                toast.error('Failed to fetch enrolled subjects.');
-            });
+        try {
+            // Fetch subjects already associated with the student
+            const response = await axios.get(`http://localhost:5077/api/student/${student.id}/subjects`);
+            if (response.data && response.data.subjects) {
+                // Extract subject IDs from the response
+                const enrolledSubjectIds = response.data.subjects.map(subject => subject.id);
+                setSelectedSubjects(enrolledSubjectIds); // Set already enrolled subjects
+            } else {
+                setSelectedSubjects([]); // Reset if no subjects are found
+                console.log('No subjects found for this student');
+            }
+        } catch (error) {
+            console.error('Error fetching enrolled subjects:', error);
+            toast.error('Failed to fetch enrolled subjects.');
+            setSelectedSubjects([]); // Reset on error
+        }
     };
 
     const handleSubjectChange = (subjectId) => {
-        setSelectedSubjects(prevSelected => {
-            if (prevSelected.includes(subjectId)) {
-                return prevSelected.filter(id => id !== subjectId); // Unenroll if unchecked
-            } else {
-                return [...prevSelected, subjectId]; // Enroll if checked
-            }
-        });
+        setSelectedSubjects(prevSelected => 
+            prevSelected.includes(subjectId) 
+                ? prevSelected.filter(id => id !== subjectId) 
+                : [...prevSelected, subjectId]
+        );
     };
 
     const handleSubmit = async (e) => {
@@ -98,12 +93,7 @@ const EnrolStudent = () => {
         }
 
         try {
-            // Prepare the subject IDs to be updated
-            const subjectsToUpdate = selectedSubjects;
-
-            // Call the new API method to update the subjects for the student
-            await axios.put(`http://localhost:5077/api/student/${selectedStudent.id}/subjects`, subjectsToUpdate);
-
+            await axios.put(`http://localhost:5077/api/student/${selectedStudent.id}/subjects`, selectedSubjects);
             await Swal.fire({
                 title: 'Success!',
                 text: 'Student subjects updated successfully.',
@@ -150,8 +140,8 @@ const EnrolStudent = () => {
                     <label><strong>Selected Student:</strong></label>
                     {selectedStudent ? (
                         <ul style={{ listStyleType: 'none', padding: 0, marginBottom: '5px' }}>
-                            <li><strong>Firstname:</strong> {firstName}</li>
-                            <li><strong>Lastname:</strong> {lastName}</li>
+                            <li><strong>Firstname:</strong> {selectedStudent.firstName}</li>
+                            <li><strong>Lastname:</strong> {selectedStudent.lastName}</li>
                         </ul>
                     ) : (
                         <p>No student selected</p>
@@ -167,9 +157,6 @@ const EnrolStudent = () => {
                                     id={`subject-${subject.id}`}
                                     checked={selectedSubjects.includes(subject.id)}
                                     onChange={() => handleSubjectChange(subject.id)}
-                                    style={{
-                                        backgroundColor: selectedSubjects.includes(subject.id) ? 'yellow' : 'transparent'
-                                    }}
                                 />
                                 <label htmlFor={`subject-${subject.id}`} style={{ marginLeft: '5px' }}>
                                     {subject.shortName}
