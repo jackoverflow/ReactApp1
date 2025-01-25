@@ -110,66 +110,77 @@ const EnrolStudent = () => {
     return (
         <div className="container mt-4">
             <h2>Enroll Student</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group mb-3">
-                    <label htmlFor="student-search"><strong>Search Student:</strong></label>
-                    <input
-                        id="student-search"
-                        type="text"
-                        className="form-control"
-                        placeholder="Search by Firstname or Lastname"
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                    />
-                    {filteredStudents.length > 0 && (
-                        <ul className="list-group">
-                            {filteredStudents.map(student => (
-                                <li
-                                    key={student.id}
-                                    className="list-group-item"
-                                    onClick={() => handleStudentSelect(student)}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    {student.firstName} {student.lastName}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-                <div className="form-group mb-3">
-                    <label><strong>Selected Student:</strong></label>
-                    {selectedStudent ? (
-                        <ul style={{ listStyleType: 'none', padding: 0, marginBottom: '5px' }}>
-                            <li><strong>Firstname:</strong> {selectedStudent.firstName}</li>
-                            <li><strong>Lastname:</strong> {selectedStudent.lastName}</li>
-                        </ul>
-                    ) : (
-                        <p>No student selected</p>
-                    )}
-                </div>
-                <div className="form-group mb-3">
-                    <label><strong>Select Subjects:</strong></label>
-                    <div>
-                        {subjects.map(subject => (
-                            <div key={subject.id} style={{ marginBottom: '5px' }}>
-                                <input
-                                    type="checkbox"
-                                    id={`subject-${subject.id}`}
-                                    checked={selectedSubjects.includes(subject.id)}
-                                    onChange={() => handleSubjectChange(subject.id)}
-                                />
-                                <label htmlFor={`subject-${subject.id}`} style={{ marginLeft: '5px' }}>
-                                    {subject.shortName}
-                                </label>
-                            </div>
-                        ))}
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <div className="card">
+                        <div className="card-header bg-primary text-white">
+                            <h2 className="mb-0">Enroll Student</h2>
+                        </div>
+                        <div className="card-body">
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-group mb-3">
+                                    <label htmlFor="student-search"><strong>Search Student:</strong></label>
+                                    <input
+                                        id="student-search"
+                                        type="text"
+                                        className="form-control"
+                                        placeholder="Search by Firstname or Lastname"
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
+                                    />
+                                    {filteredStudents.length > 0 && (
+                                        <ul className="list-group">
+                                            {filteredStudents.map(student => (
+                                                <li
+                                                    key={student.id}
+                                                    className="list-group-item"
+                                                    onClick={() => handleStudentSelect(student)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {student.firstName} {student.lastName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                                <div className="form-group mb-3">
+                                    <label><strong>Selected Student:</strong></label>
+                                    {selectedStudent ? (
+                                        <ul style={{ listStyleType: 'none', padding: 0, marginBottom: '5px' }}>
+                                            <li><strong>Firstname:</strong> {selectedStudent.firstName}</li>
+                                            <li><strong>Lastname:</strong> {selectedStudent.lastName}</li>
+                                        </ul>
+                                    ) : (
+                                        <p>No student selected</p>
+                                    )}
+                                </div>
+                                <div className="form-group mb-3">
+                                    <label><strong>Select Subjects:</strong></label>
+                                    <div>
+                                        {subjects.map(subject => (
+                                            <div key={subject.id} style={{ marginBottom: '5px' }}>
+                                                <input
+                                                    type="checkbox"
+                                                    id={`subject-${subject.id}`}
+                                                    checked={selectedSubjects.includes(subject.id)}
+                                                    onChange={() => handleSubjectChange(subject.id)}
+                                                />
+                                                <label htmlFor={`subject-${subject.id}`} style={{ marginLeft: '5px' }}>
+                                                    {subject.shortName}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                                    <button type="submit" className="btn btn-primary">Update Enrollment</button>
+                                    <Link to="/students" className="btn btn-secondary">Back to List</Link>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                    <button type="submit" className="btn btn-primary">Update Enrollment</button>
-                    <Link to="/students" className="btn btn-secondary">Back to List</Link>
-                </div>
-            </form>
+            </div>
         </div>
     );
 };
