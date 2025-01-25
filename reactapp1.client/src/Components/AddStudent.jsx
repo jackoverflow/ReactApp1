@@ -11,7 +11,6 @@ const AddStudent = () => {
     const [lastname, setLastname] = useState('');
     const [birthDate, setBirthDate] = useState('');
     const firstnameInputRef = useRef(null);
-    const [selectedStudent, setSelectedStudent] = useState(null);
 
     useEffect(() => {
         firstnameInputRef.current?.focus();
@@ -28,8 +27,8 @@ const AddStudent = () => {
         }
 
         const studentData = {
-            Firstname: firstname,
-            Lastname: lastname,
+            FirstName: firstname,
+            LastName: lastname,
             DateOfBirth: birthDate  // Send the date directly from the input
         };
 
@@ -65,17 +64,6 @@ const AddStudent = () => {
             console.error('Catch error:', error);
             toast.error('Error adding student.');
         }
-    };
-
-    const handleSubjectSubmit = async (e) => {
-        e.preventDefault();
-        const subjectData = {
-            name: subjectName,
-            description: subjectDescription,
-            studentID: selectedStudent ? selectedStudent.id : null,
-        };
-
-        await axios.post('/api/subject', subjectData);
     };
 
     return (
