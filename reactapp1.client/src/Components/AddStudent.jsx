@@ -21,6 +21,12 @@ const AddStudent = () => {
         e.preventDefault();
         console.log('Form submitted');
 
+        // Validate the birthDate
+        if (!birthDate) {
+            toast.error('Please select a valid birth date.');
+            return;
+        }
+
         const studentData = {
             Firstname: firstname,
             Lastname: lastname,
