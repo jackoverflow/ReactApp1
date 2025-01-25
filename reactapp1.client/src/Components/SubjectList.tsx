@@ -62,14 +62,16 @@ const SubjectList = () => {
             <table className="table">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Short Name</th>
                         <th>Description</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {subjects.map(subject => (
+                    {subjects.map((subject, index) => (
                         <tr key={subject.id}>
+                            <td>{index + 1}</td>
                             <td>{subject.shortName}</td>
                             <td>{subject.description}</td>
                             <td>
