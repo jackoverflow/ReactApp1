@@ -139,6 +139,7 @@ const StudentList = () => {
             <table className="student-table">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Birth Date</th>
@@ -147,8 +148,9 @@ const StudentList = () => {
                 </thead>
                 <tbody>
                     {students.length > 0 ? (
-                        students.map(student => (
+                        students.map((student, index) => (
                             <tr key={student.id}>
+                                <td>{(currentPage - 1) * pageSize + index + 1}</td>
                                 <td>{student.firstName}</td>
                                 <td>{student.lastName}</td>
                                 <td>{formatDate(student.dateOfBirth)}</td>
@@ -178,7 +180,7 @@ const StudentList = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="4" className="no-data">No students found</td>
+                            <td colSpan="5" className="no-data">No students found</td>
                         </tr>
                     )}
                 </tbody>
