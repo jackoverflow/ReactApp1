@@ -77,33 +77,56 @@ const EnrolStudent = () => {
         }
     };
 
-    const handleSubjectChange = (subjectId) => {
-        setSelectedSubjects(prevSelected => 
-            prevSelected.includes(subjectId) 
-                ? prevSelected.filter(id => id !== subjectId) 
-                : [...prevSelected, subjectId]
-        );
+    const handleSubjectChange = (e) => {
+        // Convert HTMLCollection to Array and get selected values
+        const selectedIds = Array.from(e.target.selectedOptions).map(option => Number(option.value));
+        setSelectedSubjects(selectedIds);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Check if a student is selected
         if (!selectedStudent) {
             toast.error('Please select a student.');
             return;
         }
 
+        // Check if any subjects are selected
+        if (selectedSubjects.length === 0) {
+            const confirm = await Swal.fire({
+                title: 'No Subjects Selected',
+                text: 'You have not selected any subjects. Do you want to proceed anyway?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            });
+
+            if (!confirm.isConfirmed) {
+                return; // User chose not to proceed
+            }
+        }
+
         try {
-            await axios.put(`http://localhost:5077/api/student/${selectedStudent.id}/subjects`, selectedSubjects);
+            // Always send an array, even if empty
+            const payload = selectedSubjects || [];
+            
+            await axios.put(
+                `http://localhost:5077/api/student/${selectedStudent.id}/subjects`, 
+                payload
+            );
+            
             await Swal.fire({
                 title: 'Success!',
                 text: 'Student subjects updated successfully.',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
-            navigate('/students'); // Redirect to student list
+            navigate('/students');
         } catch (error) {
             console.error('Error updating student subjects:', error);
-            toast.error('Failed to update student subjects. Please check the console for more details.');
+            toast.error('Failed to update student subjects.');
         }
     };
 
@@ -155,21 +178,20 @@ const EnrolStudent = () => {
                                 </div>
                                 <div className="form-group mb-3">
                                     <label><strong>Select Subjects:</strong></label>
-                                    <div>
+                                    <select 
+                                        multiple 
+                                        className="form-control" 
+                                        value={selectedSubjects}
+                                        onChange={handleSubjectChange}
+                                        style={{ height: '200px' }} // Make it taller for better visibility
+                                    >
                                         {subjects.map(subject => (
-                                            <div key={subject.id} style={{ marginBottom: '5px' }}>
-                                                <input
-                                                    type="checkbox"
-                                                    id={`subject-${subject.id}`}
-                                                    checked={selectedSubjects.includes(subject.id)}
-                                                    onChange={() => handleSubjectChange(subject.id)}
-                                                />
-                                                <label htmlFor={`subject-${subject.id}`} style={{ marginLeft: '5px' }}>
-                                                    {subject.shortName}
-                                                </label>
-                                            </div>
+                                            <option key={subject.id} value={subject.id}>
+                                                {subject.shortName}
+                                            </option>
                                         ))}
-                                    </div>
+                                    </select>
+                                    <small className="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple subjects</small>
                                 </div>
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                                     <button type="submit" className="btn btn-primary">Update Enrollment</button>
