@@ -22,7 +22,28 @@ const StudentList = () => {
                         pageSize: pageSize
                     }
                 });
-                setStudents(response.data);
+
+                const studentsData = response.data;
+
+                // Fetch subjects for each student
+                const studentsWithSubjects = await Promise.all(studentsData.map(async (student) => {
+                    try {
+                        const subjectsResponse = await axios.get(`http://localhost:5077/api/student/${student.id}/subjects`);
+                        return {
+                            ...student,
+                            subjects: subjectsResponse.data.subjects || [] // Add subjects to student object
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching subjects for student ${student.id}:`, error);
+                        return {
+                            ...student,
+                            subjects: [] // Default to empty if there's an error
+                        };
+                    }
+                }));
+
+                setStudents(studentsWithSubjects);
+
                 // Fetch total number of students for pagination
                 const totalResponse = await axios.get(`http://localhost:5077/api/student/count`);
                 setTotalStudents(totalResponse.data);
@@ -143,6 +164,7 @@ const StudentList = () => {
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Birth Date</th>
+                        <th>Subject Count</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -154,6 +176,7 @@ const StudentList = () => {
                                 <td>{student.firstName}</td>
                                 <td>{student.lastName}</td>
                                 <td>{formatDate(student.dateOfBirth)}</td>
+                                <td>{student.subjects.length}</td>
                                 <td>
                                     <Link 
                                         to={`/edit-student/${student.id}`}
@@ -170,17 +193,22 @@ const StudentList = () => {
                                     </button>
                                     <Link 
                                         to={`/studentsubjects/${student.id}`} 
-                                        className="btn btn-info"
+                                        className={`btn ${student.subjects.length > 0 ? 'btn-info' : 'btn-secondary'}`}
                                         style={{ marginLeft: '5px' }}
+                                        onClick={(e) => {
+                                            if (student.subjects.length === 0) {
+                                                e.preventDefault(); // Prevent navigation if no subjects
+                                            }
+                                        }}
                                     >
-                                        View Subjects
+                                        {student.subjects.length > 0 ? 'View Subjects' : 'No Subjects'}
                                     </Link>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="5" className="no-data">No students found</td>
+                            <td colSpan="6" className="no-data">No students found</td>
                         </tr>
                     )}
                 </tbody>
