@@ -12,6 +12,7 @@ interface Subject {
 
 const SubjectList = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,6 +28,11 @@ const SubjectList = () => {
 
         fetchSubjects();
     }, []);
+
+    // Filter subjects based on the search term
+    const filteredSubjects = subjects.filter(subject =>
+        subject.shortName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const handleEdit = (id: number) => {
         navigate(`/editsubject/${id}`);
@@ -58,6 +64,13 @@ const SubjectList = () => {
     return (
         <div className="container mt-4">
             <h2>Subject List</h2>
+            <input
+                type="text"
+                placeholder="Search subjects..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="form-control mb-3"
+            />
             <Link to="/addsubject" className="btn btn-primary mb-3">Add New Subject</Link>
             <table className="table">
                 <thead>
@@ -69,7 +82,7 @@ const SubjectList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {subjects.map((subject, index) => (
+                    {filteredSubjects.map((subject, index) => (
                         <tr key={subject.id}>
                             <td>{index + 1}</td>
                             <td>{subject.shortName}</td>
