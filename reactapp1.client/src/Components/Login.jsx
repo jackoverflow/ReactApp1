@@ -23,7 +23,7 @@ const Login = () => {
                 navigate('/students');
             }
         } catch (error) {
-            console.error('Login failed:', error);
+            console.error('Login failed:', error.response ? error.response.data : error);
             toast.error('Invalid username or password');
         }
     };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '.././Components/StudentList.css';
 
@@ -11,6 +11,7 @@ const StudentList = () => {
     const [totalStudents, setTotalStudents] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const pageSize = 4;
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -122,9 +123,16 @@ const StudentList = () => {
         setCurrentPage(1); // Reset to the first page on new search
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('token'); // Remove the token from local storage
+        navigate('/login'); // Redirect to the login page
+        toast.success('Logged out successfully!'); // Show logout success message
+    };
+
     return (
         <div className="student-container">
             <h1>Student List</h1>
+            <button onClick={handleLogout} className="btn btn-danger mb-3">Logout</button>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                 <Link to="/add-student" className="add-button" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
                     Add New Student
