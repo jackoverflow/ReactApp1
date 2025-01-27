@@ -8,20 +8,47 @@ import SubjectList from './Components/SubjectList';
 import EnrolStudent from './Components/EnrolStudent';
 import StudentSubjects from './Components/StudentSubjects';
 import EditSubject from './Components/EditSubject';
+import Login from './Components/Login';
+
+// Protected Route component
+const ProtectedRoute = ({ children }) => {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        return <Navigate to="/login" />;
+    }
+    
+    return children;
+};
 
 const App = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/students" element={<StudentList />} />
-                <Route path="/add-student" element={<AddStudent />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                    path="/students"
+                    element={
+                        <ProtectedRoute>
+                            <StudentList />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/add-student"
+                    element={
+                        <ProtectedRoute>
+                            <AddStudent />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="/edit-student/:id" element={<EditStudent />} />
                 <Route path="/addsubject" element={<AddSubject />} />
                 <Route path="/subjects" element={<SubjectList />} />
                 <Route path="/enrol" element={<EnrolStudent />} />
                 <Route path="/studentsubjects/:id" element={<StudentSubjects />} />
                 <Route path="/editsubject/:id" element={<EditSubject />} />
-                <Route path="/" element={<Navigate to="/students" />} />
+                <Route path="/" element={<Navigate to="/login" />} />
             </Routes>
         </Router>
     );
