@@ -86,36 +86,22 @@ const EnrolStudent = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Check if a student is selected
         if (!selectedStudent) {
             toast.error('Please select a student.');
             return;
         }
 
-        // Check if any subjects are selected
-        if (selectedSubjects.length === 0) {
-            const confirm = await Swal.fire({
-                title: 'No Subjects Selected',
-                text: 'You have not selected any subjects. Do you want to proceed anyway?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
-            });
-
-            if (!confirm.isConfirmed) {
-                return; // User chose not to proceed
-            }
-        }
-
         try {
-            // Always send an array, even if empty
-            const payload = selectedSubjects || [];
-            
-            await axios.put(
-                `http://localhost:5077/api/student/${selectedStudent.id}/subjects`, 
-                payload
-            );
+            if (selectedSubjects.length === 0) {
+                // Call the UnEnrollStudent method if no subjects are selected
+                await axios.delete(`http://localhost:5077/api/student/${selectedStudent.id}/un-enroll`);
+            } else {
+                // Send the selected subjects
+                await axios.put(
+                    `http://localhost:5077/api/student/${selectedStudent.id}/subjects`, 
+                    selectedSubjects
+                );
+            }
             
             await Swal.fire({
                 title: 'Success!',
