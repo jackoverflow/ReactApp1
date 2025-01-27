@@ -6,11 +6,13 @@ using ClosedXML.Excel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ReactApp1.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class StudentController : ControllerBase
 {
     private readonly IConfiguration _configuration;
@@ -23,6 +25,7 @@ public class StudentController : ControllerBase
             ?? throw new ArgumentNullException(nameof(_connectionString));
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Student>>> GetStudents(int pageNumber = 1, int pageSize = 10)
     {
