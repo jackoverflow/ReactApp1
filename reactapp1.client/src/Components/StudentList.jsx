@@ -1,33 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig';  // Make sure to use the configured axios
 import { toast } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import '.././Components/StudentList.css';
 
 const StudentList = () => {
-    const [students, setStudents] = useState([]);
+    const [students, setStudents] = useState([]);  // Initialize as empty array
     const [currentPage, setCurrentPage] = useState(1);
     const [totalStudents, setTotalStudents] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(true);  // Add loading state
     const pageSize = 4;
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await axios.get(`/api/student/search`, {
+                setLoading(true);  // Start loading
+                const response = await axios.get('/api/student/search', {
                     params: {
-                        searchTerm: searchTerm,
+                        searchTerm,
                         pageNumber: currentPage,
-                        pageSize: pageSize
+                        pageSize
                     }
                 });
 
-                setStudents(response.data);
+                // Ensure response.data is an array
+                setStudents(Array.isArray(response.data) ? response.data : []);
 
-                // Fetch total number of students for pagination
-                const totalResponse = await axios.get(`/api/student/count`);
+                const totalResponse = await axios.get('/api/student/count');
                 setTotalStudents(totalResponse.data);
             } catch (error) {
                 console.error('Error fetching students:', error);
@@ -36,11 +38,14 @@ const StudentList = () => {
                 } else {
                     toast.error('Failed to fetch students.');
                 }
+                setStudents([]); // Set to empty array on error
+            } finally {
+                setLoading(false);  // End loading
             }
         };
 
         fetchStudents();
-    }, [currentPage, searchTerm]);
+    }, [currentPage, searchTerm, navigate]);
 
     const totalPages = Math.ceil(totalStudents / pageSize); // Calculate total pages
 
@@ -162,19 +167,22 @@ const StudentList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {students.length > 0 ? (
+                    {loading ? (
+                        <tr>
+                            <td colSpan="6" className="text-center">Loading...</td>
+                        </tr>
+                    ) : students.length > 0 ? (
                         students.map((student, index) => (
                             <tr key={student.id}>
                                 <td>{(currentPage - 1) * pageSize + index + 1}</td>
                                 <td>{student.firstName}</td>
                                 <td>{student.lastName}</td>
                                 <td>{formatDate(student.dateOfBirth)}</td>
-                                <td>{student.subjects.length}</td>
+                                <td>{student.subjects ? student.subjects.length : 0}</td>
                                 <td>
                                     <Link 
                                         to={`/edit-student/${student.id}`}
                                         className="btn btn-warning"
-                                        onClick={() => console.log('Student being edited:', student)}
                                     >
                                         Edit
                                     </Link>
@@ -186,22 +194,22 @@ const StudentList = () => {
                                     </button>
                                     <Link 
                                         to={`/studentsubjects/${student.id}`} 
-                                        className={`btn ${student.subjects.length > 0 ? 'btn-info' : 'btn-secondary'}`}
+                                        className={`btn ${student.subjects ? 'btn-info' : 'btn-secondary'}`}
                                         style={{ marginLeft: '5px' }}
                                         onClick={(e) => {
-                                            if (student.subjects.length === 0) {
+                                            if (!student.subjects) {
                                                 e.preventDefault(); // Prevent navigation if no subjects
                                             }
                                         }}
                                     >
-                                        {student.subjects.length > 0 ? 'View Subjects' : 'No Subjects'}
+                                        {student.subjects ? 'View Subjects' : 'No Subjects'}
                                     </Link>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="6" className="no-data">No students found</td>
+                            <td colSpan="6" className="text-center">No students found</td>
                         </tr>
                     )}
                 </tbody>

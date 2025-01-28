@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig'; // Use the configured axios instance
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import Swal from 'sweetalert2';
@@ -18,8 +18,12 @@ const SubjectList = () => {
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const response = await axios.get('http://localhost:5077/api/student/subjects');
-                setSubjects(response.data);
+                const response = await axios.get('/api/student/subjects');
+                const subjectsWithNumberIds = response.data.map((subject: any) => ({
+                    ...subject,
+                    id: Number(subject.id)
+                }));
+                setSubjects(subjectsWithNumberIds);
             } catch (error) {
                 console.error('Error fetching subjects:', error);
                 toast.error('Failed to fetch subjects.');
@@ -51,7 +55,7 @@ const SubjectList = () => {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`http://localhost:5077/api/student/subject/${id}`);
+                await axios.delete(`/api/student/subject/${id}`);
                 setSubjects(subjects.filter(subject => subject.id !== id));
                 toast.success('Subject deleted successfully!');
             } catch (error) {
@@ -82,31 +86,37 @@ const SubjectList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredSubjects.map((subject, index) => (
-                        <tr key={subject.id}>
-                            <td>{index + 1}</td>
-                            <td>{subject.shortName}</td>
-                            <td>{subject.description}</td>
-                            <td>
-                                <button 
-                                    onClick={() => handleEdit(subject.id)} 
-                                    className="btn btn-warning"
-                                >
-                                    Edit
-                                </button>
-                                <button 
-                                    onClick={() => handleDelete(subject.id)} 
-                                    className="btn btn-danger" 
-                                    style={{ marginLeft: '5px' }}
-                                >
-                                    Delete
-                                </button>
-                            </td>
+                    {filteredSubjects.length > 0 ? (
+                        filteredSubjects.map((subject, index) => (
+                            <tr key={subject.id}>
+                                <td>{index + 1}</td>
+                                <td>{subject.shortName}</td>
+                                <td>{subject.description}</td>
+                                <td>
+                                    <button 
+                                        onClick={() => handleEdit(subject.id)} 
+                                        className="btn btn-warning"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDelete(subject.id)} 
+                                        className="btn btn-danger" 
+                                        style={{ marginLeft: '5px' }}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={4} className="text-center">No subjects found</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
-            <Link to="/students" className="btn btn-secondary mt-3">Back to List</Link>
+            <Link to="/students" className="btn btn-secondary mt-3">Back to Student List</Link>
         </div>
     );
 };

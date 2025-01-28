@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import './StudentList.css';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+import axios from '../axiosConfig'; // Use the configured axios instance
 
 const AddSubject = () => {
     const navigate = useNavigate();
@@ -36,12 +36,12 @@ const AddSubject = () => {
                 navigate('/subjects');
             }
         } catch (error) {
+            console.error('Error adding subject:', error);
             if (error.response?.status === 401) {
                 toast.error('Please login again.');
                 navigate('/login');
             } else {
-                console.error('Error adding subject:', error.response?.data || error.message);
-                toast.error('Failed to add subject. Please try again.');
+                toast.error(error.response?.data || 'Failed to add subject. Please try again.');
             }
         }
     };
