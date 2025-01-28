@@ -3,6 +3,7 @@ import axios from '../axiosConfig'; // Use the configured axios instance
 import { toast } from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
 import './StudentList.css';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 const EnrolStudent = () => {
     const navigate = useNavigate();
@@ -84,22 +85,46 @@ const EnrolStudent = () => {
         }
 
         try {
-            // First, unenroll all existing subjects
-            await axios.delete(`/api/student/${selectedStudent.id}/subjects`);
+            // Check for existing enrollments
+            const existingEnrollments = await axios.get(`/api/student/${selectedStudent.id}/subjects`);
+            const existingSubjectIds = existingEnrollments.data.subjects 
+                ? existingEnrollments.data.subjects.map(subject => subject.id.toString())
+                : [];
 
-            // Then, enroll the selected subjects
-            if (selectedSubjects.length > 0) {
+            // Get subjects to remove (subjects that were enrolled but are no longer selected)
+            const subjectsToRemove = existingSubjectIds.filter(id => !selectedSubjects.includes(id));
+
+            // Remove subjects that are no longer selected
+            for (const subjectId of subjectsToRemove) {
+                await axios.delete(`/api/student/${selectedStudent.id}/subjects/${subjectId}`);
+            }
+
+            // Get new subjects to add (subjects that are selected but weren't enrolled)
+            const newSubjectIds = selectedSubjects.filter(id => !existingSubjectIds.includes(id.toString()));
+
+            // Add new subjects
+            if (newSubjectIds.length > 0) {
                 const response = await axios.post('/api/student/enrol', {
                     StudentId: selectedStudent.id,
-                    SubjectIds: selectedSubjects.map(id => Number(id)) // Ensure IDs are numbers
+                    SubjectIds: newSubjectIds.map(id => Number(id))
                 });
 
                 if (response.status === 201) {
-                    toast.success('Student enrollment updated successfully!');
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Student enrollment updated successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
                     navigate('/students');
                 }
             } else {
-                toast.success('All subjects removed successfully!');
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Student enrollment updated successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
                 navigate('/students');
             }
         } catch (error) {
@@ -108,6 +133,64 @@ const EnrolStudent = () => {
                 toast.error(`Failed to update enrollment: ${error.response.data.message || 'Unknown error'}`);
             } else {
                 toast.error('Failed to update enrollment. Please try again.');
+            }
+        }
+    };
+
+    const handleUnenrollSubject = async (subjectId) => {
+        if (!selectedStudent) {
+            toast.error('Please select a student first.');
+            return;
+        }
+
+        try {
+            // Call the UnEnroll API endpoint for a specific subject
+            const response = await axios.delete(`/api/student/${selectedStudent.id}/subjects/${subjectId}`);
+            if (response.status === 204) { // No Content
+                setSelectedSubjects(selectedSubjects.filter(id => id !== subjectId)); // Remove the subject from the selected list
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Subject unenrolled successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                toast.error('Failed to unenroll subject.');
+            }
+        } catch (error) {
+            console.error('Error unenrolling subject:', error);
+            toast.error('Failed to unenroll subject.');
+        }
+    };
+
+    const handleUpdateSubjects = async () => {
+        if (!selectedStudent) {
+            toast.error('Please select a student first.');
+            return;
+        }
+
+        try {
+            // Unenroll existing subjects if needed
+            for (const subjectId of selectedSubjects) {
+                await axios.delete(`/api/student/${selectedStudent.id}/subjects/${subjectId}`);
+            }
+
+            // Enroll the new subjects
+            const response = await axios.post('/api/student/enrol', {
+                StudentId: selectedStudent.id,
+                SubjectIds: selectedSubjects.map(id => Number(id)) // Ensure IDs are numbers
+            });
+
+            if (response.status === 201) {
+                toast.success('Student subjects updated successfully!');
+                navigate('/students');
+            }
+        } catch (error) {
+            console.error('Error updating subjects:', error);
+            if (error.response) {
+                toast.error(`Failed to update subjects: ${error.response.data.message || 'Unknown error'}`);
+            } else {
+                toast.error('Failed to update subjects. Please try again.');
             }
         }
     };

@@ -439,6 +439,25 @@ public class StudentController : ControllerBase
         }
     }
 
+    [HttpDelete("{studentId}/subjects/{subjectId}")]
+    public async Task<IActionResult> UnEnrol(int studentId, int subjectId)
+    {
+        using var connection = new NpgsqlConnection(_connectionString);
+        
+        try
+        {
+            await connection.OpenAsync(); // Ensure the connection is open
+            var deleteQuery = "DELETE FROM public.StudentSubject WHERE StudentId = @StudentId AND SubjectId = @SubjectId";
+            await connection.ExecuteAsync(deleteQuery, new { StudentId = studentId, SubjectId = subjectId });
+            
+            return NoContent(); // Return 204 No Content on successful deletion
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
+    }
+
     // Create a class to represent the enrollment request
     public class EnrollmentRequest
     {
