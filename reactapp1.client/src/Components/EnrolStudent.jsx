@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig'; // Use the configured axios instance
 import { toast } from 'react-hot-toast';
-import Swal from 'sweetalert2';
 import { useNavigate, Link } from 'react-router-dom';
 import './StudentList.css';
 
@@ -17,7 +16,7 @@ const EnrolStudent = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await axios.get('http://localhost:5077/api/student/search');
+                const response = await axios.get('/api/student/search');
                 setStudents(response.data);
             } catch (error) {
                 console.error('Error fetching students:', error);
@@ -27,7 +26,7 @@ const EnrolStudent = () => {
 
         const fetchSubjects = async () => {
             try {
-                const response = await axios.get('http://localhost:5077/api/student/subjects');
+                const response = await axios.get('/api/student/subjects');
                 setSubjects(response.data);
             } catch (error) {
                 console.error('Error fetching subjects:', error);
@@ -61,7 +60,7 @@ const EnrolStudent = () => {
 
         try {
             // Fetch subjects already associated with the student
-            const response = await axios.get(`http://localhost:5077/api/student/${student.id}/subjects`);
+            const response = await axios.get(`/api/student/${student.id}/subjects`);
             if (response.data && response.data.subjects) {
                 // Extract subject IDs from the response
                 const enrolledSubjectIds = response.data.subjects.map(subject => subject.id);
@@ -77,12 +76,6 @@ const EnrolStudent = () => {
         }
     };
 
-    const handleSubjectChange = (e) => {
-        // Convert HTMLCollection to Array and get selected values
-        const selectedIds = Array.from(e.target.selectedOptions).map(option => Number(option.value));
-        setSelectedSubjects(selectedIds);
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!selectedStudent) {
@@ -91,9 +84,24 @@ const EnrolStudent = () => {
         }
 
         try {
+            // Check for existing enrollments
+            const existingEnrollments = await axios.get(`/api/student/${selectedStudent.id}/subjects`);
+            const existingSubjectIds = existingEnrollments.data.subjects 
+                ? existingEnrollments.data.subjects.map(subject => subject.id.toString())
+                : [];
+
+            // Filter out subjects that are already enrolled
+            const newSubjectIds = selectedSubjects.filter(id => !existingSubjectIds.includes(id.toString()));
+
+            if (newSubjectIds.length === 0) {
+                toast.info('No new subjects to enroll. The student is already enrolled in the selected subjects.');
+                return;
+            }
+
+            // Re-add selected subjects
             const response = await axios.post('/api/student/enrol', {
                 StudentId: selectedStudent.id,
-                SubjectIds: selectedSubjects
+                SubjectIds: newSubjectIds.map(id => Number(id)) // Ensure IDs are numbers
             });
 
             if (response.status === 201) {
@@ -101,11 +109,12 @@ const EnrolStudent = () => {
                 navigate('/students');
             }
         } catch (error) {
-            if (error.response?.status === 401) {
-                toast.error('Please login again.');
-                navigate('/login');
+            console.error('Error enrolling student:', error);
+            if (error.response?.data?.includes('duplicate key value')) {
+                toast.error('Student is already enrolled in one or more of these subjects.');
+            } else if (error.response) {
+                toast.error(`Failed to enroll student: ${error.response.data.message || 'Unknown error'}`);
             } else {
-                console.error('Error enrolling student:', error.response?.data || error.message);
                 toast.error('Failed to enroll student. Please try again.');
             }
         }
@@ -113,76 +122,65 @@ const EnrolStudent = () => {
 
     return (
         <div className="container mt-4">
-            <div className="row justify-content-center">
-                <div className="col-md-6">
-                    <div className="card">
-                        <div className="card-header bg-primary text-white">
-                            <h2 className="mb-0">Enroll Student</h2>
-                        </div>
-                        <div className="card-body">
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-group mb-3">
-                                    <label htmlFor="student-search"><strong>Search Student:</strong></label>
-                                    <input
-                                        id="student-search"
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Search by Firstname or Lastname"
-                                        value={searchTerm}
-                                        onChange={handleSearchChange}
-                                    />
-                                    {filteredStudents.length > 0 && (
-                                        <ul className="list-group">
-                                            {filteredStudents.map(student => (
-                                                <li
-                                                    key={student.id}
-                                                    className="list-group-item"
-                                                    onClick={() => handleStudentSelect(student)}
-                                                    style={{ cursor: 'pointer' }}
-                                                >
-                                                    {student.firstName} {student.lastName}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
-                                <div className="form-group mb-3">
-                                    <label><strong>Selected Student:</strong></label>
-                                    {selectedStudent ? (
-                                        <ul style={{ listStyleType: 'none', padding: 0, marginBottom: '5px' }}>
-                                            <li><strong>Firstname:</strong> {selectedStudent.firstName}</li>
-                                            <li><strong>Lastname:</strong> {selectedStudent.lastName}</li>
-                                        </ul>
-                                    ) : (
-                                        <p>No student selected</p>
-                                    )}
-                                </div>
-                                <div className="form-group mb-3">
-                                    <label><strong>Select Subjects:</strong></label>
-                                    <select 
-                                        multiple 
-                                        className="form-control" 
-                                        value={selectedSubjects}
-                                        onChange={handleSubjectChange}
-                                        style={{ height: '200px' }} // Make it taller for better visibility
-                                    >
-                                        {subjects.map(subject => (
-                                            <option key={subject.id} value={subject.id}>
-                                                {subject.shortName}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <small className="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple subjects</small>
-                                </div>
-                                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                                    <button type="submit" className="btn btn-primary">Update Enrollment</button>
-                                    <Link to="/students" className="btn btn-secondary">Back to List</Link>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+            <h2>Enroll Student</h2>
+            <form onSubmit={handleSubmit}>
+                <div className="form-group mb-3">
+                    <label><strong>Search Student:</strong></label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search by Firstname or Lastname"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                    />
+                    {filteredStudents.length > 0 && (
+                        <ul className="list-group">
+                            {filteredStudents.map(student => (
+                                <li
+                                    key={student.id}
+                                    className="list-group-item"
+                                    onClick={() => handleStudentSelect(student)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {student.firstName} {student.lastName}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </div>
-            </div>
+                <div className="form-group mb-3">
+                    <label><strong>Selected Student:</strong></label>
+                    {selectedStudent ? (
+                        <ul style={{ listStyleType: 'none', padding: 0, marginBottom: '5px' }}>
+                            <li><strong>Firstname:</strong> {selectedStudent.firstName}</li>
+                            <li><strong>Lastname:</strong> {selectedStudent.lastName}</li>
+                        </ul>
+                    ) : (
+                        <p>No student selected</p>
+                    )}
+                </div>
+                <div className="form-group mb-3">
+                    <label><strong>Select Subjects:</strong></label>
+                    <select 
+                        multiple 
+                        className="form-control" 
+                        value={selectedSubjects}
+                        onChange={(e) => setSelectedSubjects([...e.target.selectedOptions].map(option => option.value))}
+                        style={{ height: '200px' }} // Make it taller for better visibility
+                    >
+                        {subjects.map(subject => (
+                            <option key={subject.id} value={subject.id}>
+                                {subject.shortName}
+                            </option>
+                        ))}
+                    </select>
+                    <small className="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple subjects</small>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                    <button type="submit" className="btn btn-primary">Update Enrollment</button>
+                    <Link to="/students" className="btn btn-secondary">Back to List</Link>
+                </div>
+            </form>
         </div>
     );
 };

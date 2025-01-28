@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import './StudentList.css';
 import Swal from 'sweetalert2';
@@ -7,50 +7,43 @@ import axios from '../axiosConfig'; // Import the configured axios instance
 
 const AddStudent = () => {
     const navigate = useNavigate();
-    const [firstname, setFirstname] = useState('');
-    const [lastname, setLastname] = useState('');
-    const [birthDate, setBirthDate] = useState('');
-    const firstnameInputRef = useRef(null);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [dateOfBirth, setDateOfBirth] = useState('');
+    const firstNameInputRef = useRef(null);
 
     useEffect(() => {
-        firstnameInputRef.current?.focus();
+        firstNameInputRef.current?.focus();
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        if (!birthDate) {
-            toast.error('Please select a valid birth date.');
-            return;
-        }
-
         const studentData = {
-            FirstName: firstname,
-            LastName: lastname,
-            DateOfBirth: birthDate
+            firstName,
+            lastName,
+            dateOfBirth
         };
 
         try {
-            const token = localStorage.getItem('token');
-            console.log('Token:', token); // Debug token
-
-            const response = await axios.post('/api/student', studentData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.data) {
-                toast.success('Student added successfully!');
+            const response = await axios.post('/api/student', studentData);
+            
+            if (response.status === 201) {
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'A student has been added.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
                 navigate('/students');
             }
         } catch (error) {
-            console.error('Full error:', error); // Debug error
+            console.error('Error adding student:', error);
             if (error.response?.status === 401) {
-                toast.error('Authentication failed. Please login again.');
+                toast.error('Please login again.');
                 navigate('/login');
             } else {
-                toast.error(error.response?.data || 'Failed to add student');
+                toast.error(error.response?.data || 'Failed to add student. Please try again.');
             }
         }
     };
@@ -66,46 +59,50 @@ const AddStudent = () => {
                         <div className="card-body">
                             <form onSubmit={handleSubmit}>
                                 <div className="form-group mb-3">
-                                    <label htmlFor="firstname" className="form-label">Firstname:</label>
-                                    <input 
-                                        id="firstname"
-                                        type="text" 
-                                        className="form-control" 
-                                        value={firstname} 
-                                        onChange={(e) => setFirstname(e.target.value)}
-                                        ref={firstnameInputRef}
-                                        required 
+                                    <label htmlFor="firstName" className="form-label">First Name:</label>
+                                    <input
+                                        id="firstName"
+                                        type="text"
+                                        className="form-control"
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
+                                        ref={firstNameInputRef}
+                                        required
                                     />
                                 </div>
                                 <div className="form-group mb-3">
-                                    <label htmlFor="lastname" className="form-label">Lastname:</label>
-                                    <input 
-                                        id="lastname"
-                                        type="text" 
-                                        className="form-control" 
-                                        value={lastname} 
-                                        onChange={(e) => setLastname(e.target.value)}
-                                        required 
+                                    <label htmlFor="lastName" className="form-label">Last Name:</label>
+                                    <input
+                                        id="lastName"
+                                        type="text"
+                                        className="form-control"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
+                                        required
                                     />
                                 </div>
                                 <div className="form-group mb-3">
-                                    <label htmlFor="birthDate" className="form-label">Birth Date:</label>
-                                    <input 
-                                        id="birthDate"
-                                        type="date" 
-                                        className="form-control" 
-                                        value={birthDate} 
-                                        onChange={(e) => setBirthDate(e.target.value)}
-                                        required 
+                                    <label htmlFor="dateOfBirth" className="form-label">Date of Birth:</label>
+                                    <input
+                                        id="dateOfBirth"
+                                        type="date"
+                                        className="form-control"
+                                        value={dateOfBirth}
+                                        onChange={(e) => setDateOfBirth(e.target.value)}
+                                        required
                                     />
                                 </div>
                                 <div className="d-flex gap-2">
                                     <button type="submit" className="btn btn-primary">
                                         Add Student
                                     </button>
-                                    <Link to="/students" className="btn btn-secondary" style={{ marginLeft: '10px' }}>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-secondary"
+                                        onClick={() => navigate('/students')}
+                                    >
                                         Cancel
-                                    </Link>
+                                    </button>
                                 </div>
                             </form>
                         </div>
