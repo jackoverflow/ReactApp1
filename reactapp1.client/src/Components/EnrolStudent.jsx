@@ -256,6 +256,18 @@ const EnrolStudent = () => {
                     <Link to="/students" className="btn btn-secondary">Back to List</Link>
                 </div>
             </form>
+            {selectedStudent && (
+                <div className="mt-4">
+                    <h4>Enrolled Subjects:</h4>
+                    <ul className="list-group">
+                        {selectedSubjects.map(subjectId => (
+                            <li key={subjectId} className="list-group-item">
+                                {subjects.find(subject => subject.id === subjectId)?.shortName}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 };
