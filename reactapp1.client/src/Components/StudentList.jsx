@@ -16,7 +16,7 @@ const StudentList = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await axios.get(`http://localhost:5077/api/student/search`, {
+                const response = await axios.get(`/api/student/search`, {
                     params: {
                         searchTerm: searchTerm,
                         pageNumber: currentPage,
@@ -24,33 +24,18 @@ const StudentList = () => {
                     }
                 });
 
-                const studentsData = response.data;
-
-                // Fetch subjects for each student
-                const studentsWithSubjects = await Promise.all(studentsData.map(async (student) => {
-                    try {
-                        const subjectsResponse = await axios.get(`http://localhost:5077/api/student/${student.id}/subjects`);
-                        return {
-                            ...student,
-                            subjects: subjectsResponse.data.subjects || [] // Add subjects to student object
-                        };
-                    } catch (error) {
-                        console.error(`Error fetching subjects for student ${student.id}:`, error);
-                        return {
-                            ...student,
-                            subjects: [] // Default to empty if there's an error
-                        };
-                    }
-                }));
-
-                setStudents(studentsWithSubjects);
+                setStudents(response.data);
 
                 // Fetch total number of students for pagination
-                const totalResponse = await axios.get(`http://localhost:5077/api/student/count`);
+                const totalResponse = await axios.get(`/api/student/count`);
                 setTotalStudents(totalResponse.data);
             } catch (error) {
                 console.error('Error fetching students:', error);
-                toast.error('Failed to fetch students.');
+                if (error.response?.status === 401) {
+                    navigate('/login');
+                } else {
+                    toast.error('Failed to fetch students.');
+                }
             }
         };
 

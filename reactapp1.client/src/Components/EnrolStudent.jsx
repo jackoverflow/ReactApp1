@@ -85,34 +85,29 @@ const EnrolStudent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
         if (!selectedStudent) {
             toast.error('Please select a student.');
             return;
         }
 
         try {
-            if (selectedSubjects.length === 0) {
-                // Call the UnEnrollStudent method if no subjects are selected
-                await axios.delete(`http://localhost:5077/api/student/${selectedStudent.id}/un-enroll`);
-            } else {
-                // Send the selected subjects
-                await axios.put(
-                    `http://localhost:5077/api/student/${selectedStudent.id}/subjects`, 
-                    selectedSubjects
-                );
-            }
-            
-            await Swal.fire({
-                title: 'Success!',
-                text: 'Student subjects updated successfully.',
-                icon: 'success',
-                confirmButtonText: 'OK'
+            const response = await axios.post('/api/student/enrol', {
+                StudentId: selectedStudent.id,
+                SubjectIds: selectedSubjects
             });
-            navigate('/students');
+
+            if (response.status === 201) {
+                toast.success('Student enrolled successfully!');
+                navigate('/students');
+            }
         } catch (error) {
-            console.error('Error updating student subjects:', error);
-            toast.error('Failed to update student subjects.');
+            if (error.response?.status === 401) {
+                toast.error('Please login again.');
+                navigate('/login');
+            } else {
+                console.error('Error enrolling student:', error.response?.data || error.message);
+                toast.error('Failed to enroll student. Please try again.');
+            }
         }
     };
 

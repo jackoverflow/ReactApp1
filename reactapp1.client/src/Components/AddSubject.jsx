@@ -17,32 +17,32 @@ const AddSubject = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted');
-
+        
         const subjectData = {
             shortName: shortName,
             description: description
         };
 
         try {
-            console.log('Sending request...');
-            const response = await axios.post('http://localhost:5077/api/student/subject', subjectData);
-
+            const response = await axios.post('/api/student/subject', subjectData);
+            
             if (response.status === 201) {
-                console.log('Response successful, about to show toast');
-                
                 await Swal.fire({
                     title: 'Success!',
                     text: 'A subject has been added.',
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
-
-                navigate('/subjects'); // Assuming you have a subjects list page
+                navigate('/subjects');
             }
         } catch (error) {
-            console.error('Error:', error);
-            toast.error('Error adding subject.');
+            if (error.response?.status === 401) {
+                toast.error('Please login again.');
+                navigate('/login');
+            } else {
+                console.error('Error adding subject:', error.response?.data || error.message);
+                toast.error('Failed to add subject. Please try again.');
+            }
         }
     };
 

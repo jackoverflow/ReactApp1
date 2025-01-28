@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import './StudentList.css';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+import axios from '../axiosConfig'; // Import the configured axios instance
 
 const AddStudent = () => {
     const navigate = useNavigate();
@@ -18,9 +18,7 @@ const AddStudent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form submitted');
-
-        // Validate the birthDate
+        
         if (!birthDate) {
             toast.error('Please select a valid birth date.');
             return;
@@ -29,40 +27,31 @@ const AddStudent = () => {
         const studentData = {
             FirstName: firstname,
             LastName: lastname,
-            DateOfBirth: birthDate  // Send the date directly from the input
+            DateOfBirth: birthDate
         };
 
         try {
-            console.log('Sending student data:', studentData);
-            const response = await fetch('http://localhost:5077/api/student', {
-                method: 'POST',
+            const token = localStorage.getItem('token');
+            console.log('Token:', token); // Debug token
+
+            const response = await axios.post('/api/student', studentData, {
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(studentData),
+                    'Authorization': `Bearer ${token}`
+                }
             });
 
-            if (response.ok) {
-                const addedStudent = await response.json();
-                console.log('Response successful, about to show toast');
-                
-                await Swal.fire({
-                    title: 'Success!',
-                    text: 'A student has been added.',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-
-                // Redirect to Student List immediately after pressing OK
+            if (response.data) {
+                toast.success('Student added successfully!');
                 navigate('/students');
-            } else {
-                const errorText = await response.text();
-                console.log('Error response:', errorText);
-                toast.error(`Failed to add student: ${errorText}`);
             }
         } catch (error) {
-            console.error('Catch error:', error);
-            toast.error('Error adding student.');
+            console.error('Full error:', error); // Debug error
+            if (error.response?.status === 401) {
+                toast.error('Authentication failed. Please login again.');
+                navigate('/login');
+            } else {
+                toast.error(error.response?.data || 'Failed to add student');
+            }
         }
     };
 

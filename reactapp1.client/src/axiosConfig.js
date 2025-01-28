@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+const instance = axios.create({
+    baseURL: 'http://localhost:5077',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+
 // Add a request interceptor
-axios.interceptors.request.use(
+instance.interceptors.request.use(
     config => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -9,21 +16,22 @@ axios.interceptors.request.use(
         }
         return config;
     },
-    error => {
-        return Promise.reject(error);
-    }
+    error => Promise.reject(error)
 );
 
 // Add a response interceptor
-axios.interceptors.response.use(
+instance.interceptors.response.use(
     response => response,
     error => {
         if (error.response?.status === 401) {
-            localStorage.removeItem('token');
-            window.location.href = '/login';
+            // Only redirect if not on login page
+            if (!window.location.pathname.includes('/login')) {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }
 );
 
-export default axios; 
+export default instance; 

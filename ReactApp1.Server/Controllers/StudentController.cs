@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace ReactApp1.Server.Controllers;
 
@@ -17,12 +18,14 @@ public class StudentController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly string? _connectionString;
+    private readonly ILogger<StudentController> _logger;
 
-    public StudentController(IConfiguration configuration)
+    public StudentController(IConfiguration configuration, ILogger<StudentController> logger)
     {
         _configuration = configuration;
         _connectionString = _configuration.GetConnectionString("DefaultConnection") 
             ?? throw new ArgumentNullException(nameof(_connectionString));
+        _logger = logger;
     }
 
     [Authorize]
@@ -52,24 +55,33 @@ public class StudentController : ControllerBase
         return Ok(student);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<Student>> AddStudent([FromBody] Student student)
     {
         try
         {
+            // Log the current user's identity
+            _logger.LogInformation($"User: {User?.Identity?.Name}, IsAuthenticated: {User?.Identity?.IsAuthenticated}");
+
             if (student == null)
             {
+                _logger.LogWarning("Received null student data.");
                 return BadRequest("Student data is null.");
             }
 
             using var connection = new NpgsqlConnection(_connectionString);
-            var query = "INSERT INTO public.Students (FirstName, LastName, DateOfBirth) VALUES (@FirstName, @LastName, @DateOfBirth) RETURNING *";
+            var query = @"INSERT INTO public.Students (FirstName, LastName, DateOfBirth) 
+                         VALUES (@FirstName, @LastName, @DateOfBirth) 
+                         RETURNING *";
             var addedStudent = await connection.QuerySingleAsync<Student>(query, student);
 
+            _logger.LogInformation($"Student added with ID: {addedStudent.Id}");
             return CreatedAtAction(nameof(GetStudent), new { id = addedStudent.Id }, addedStudent);
         }
         catch (Exception ex)
         {
+            _logger.LogError($"Error adding student: {ex.Message}");
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }

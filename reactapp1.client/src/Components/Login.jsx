@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
@@ -12,7 +12,7 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5077/api/auth/login', {
+            const response = await axios.post('/api/auth/login', {
                 username,
                 password
             });
@@ -23,7 +23,7 @@ const Login = () => {
                 navigate('/students');
             }
         } catch (error) {
-            console.error('Login failed:', error.response ? error.response.data : error);
+            console.error('Login failed:', error.response?.data || error.message);
             toast.error('Invalid username or password');
         }
     };

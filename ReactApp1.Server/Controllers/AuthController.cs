@@ -5,15 +5,18 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
 {
+    private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
 
-    public AuthController(ILogger<AuthController> logger)
+    public AuthController(IConfiguration configuration, ILogger<AuthController> logger)
     {
+        _configuration = configuration;
         _logger = logger;
     }
 
@@ -21,27 +24,23 @@ public class AuthController : ControllerBase
     public IActionResult Login([FromBody] LoginRequest request)
     {
         _logger.LogInformation("Login attempt for user: {Username}", request.Username);
-        // Validate user credentials (this is just an example)
-        if (request.Username == "admin" && request.Password == "password") // Replace with actual validation
+        
+        if (request.Username == "admin" && request.Password == "password")
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            // Use a longer secret key (at least 16 characters)
-            var key = Encoding.UTF8.GetBytes("YourSuperSecretKeyHere12345!@#$%"); 
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, request.Username)
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key), 
-                    SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return Ok(new { Token = tokenHandler.WriteToken(token) });
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("YourSuperSecretKeyHere12345!@#$%"));
+            
+            var token = new JwtSecurityToken(
+                issuer: "YourIssuer",
+                audience: "YourAudience",
+                claims: new[] { new Claim(ClaimTypes.Name, request.Username) },
+                expires: DateTime.UtcNow.AddDays(1),
+                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+            );
+
+            return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
-        _logger.LogWarning("Invalid login attempt for user: {Username}", request.Username);
+
         return Unauthorized();
     }
 }

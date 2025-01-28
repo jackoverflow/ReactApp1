@@ -58,9 +58,9 @@ namespace ReactApp1.Server
             app.UseStaticFiles();
 
             app.UseRouting();
-
-            app.UseAuthentication(); // Enable authentication
-            app.UseAuthorization(); // Enable authorization
+            app.UseCors("AllowAllOrigins");
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
