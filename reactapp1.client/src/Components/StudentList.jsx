@@ -17,7 +17,7 @@ const StudentList = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                setLoading(true);  // Start loading
+                setLoading(true);
                 const response = await axios.get('/api/student/search', {
                     params: {
                         searchTerm,
@@ -26,9 +26,18 @@ const StudentList = () => {
                     }
                 });
 
-                // Ensure response.data is an array
-                setStudents(Array.isArray(response.data) ? response.data : []);
+                // Fetch subject counts for each student
+                const studentsWithSubjects = await Promise.all(
+                    response.data.map(async (student) => {
+                        const subjectsResponse = await axios.get(`/api/student/${student.id}/subjects`);
+                        return {
+                            ...student,
+                            subjectCount: subjectsResponse.data.subjects ? subjectsResponse.data.subjects.length : 0
+                        };
+                    })
+                );
 
+                setStudents(studentsWithSubjects);
                 const totalResponse = await axios.get('/api/student/count');
                 setTotalStudents(totalResponse.data);
             } catch (error) {
@@ -38,9 +47,9 @@ const StudentList = () => {
                 } else {
                     toast.error('Failed to fetch students.');
                 }
-                setStudents([]); // Set to empty array on error
+                setStudents([]);
             } finally {
-                setLoading(false);  // End loading
+                setLoading(false);
             }
         };
 
@@ -119,6 +128,8 @@ const StudentList = () => {
         toast.success('Logged out successfully!'); // Show logout success message
     };
 
+    if (loading) return <div>Loading...</div>;
+
     return (
         <div className="student-container">
             <h1>Student List</h1>
@@ -167,18 +178,14 @@ const StudentList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {loading ? (
-                        <tr>
-                            <td colSpan="6" className="text-center">Loading...</td>
-                        </tr>
-                    ) : students.length > 0 ? (
+                    {students.length > 0 ? (
                         students.map((student, index) => (
                             <tr key={student.id}>
                                 <td>{(currentPage - 1) * pageSize + index + 1}</td>
                                 <td>{student.firstName}</td>
                                 <td>{student.lastName}</td>
                                 <td>{formatDate(student.dateOfBirth)}</td>
-                                <td>{student.subjects ? student.subjects.length : 0}</td>
+                                <td>{student.subjectCount}</td>
                                 <td>
                                     <Link 
                                         to={`/edit-student/${student.id}`}
