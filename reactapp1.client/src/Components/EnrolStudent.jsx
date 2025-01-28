@@ -84,38 +84,30 @@ const EnrolStudent = () => {
         }
 
         try {
-            // Check for existing enrollments
-            const existingEnrollments = await axios.get(`/api/student/${selectedStudent.id}/subjects`);
-            const existingSubjectIds = existingEnrollments.data.subjects 
-                ? existingEnrollments.data.subjects.map(subject => subject.id.toString())
-                : [];
+            // First, unenroll all existing subjects
+            await axios.delete(`/api/student/${selectedStudent.id}/subjects`);
 
-            // Filter out subjects that are already enrolled
-            const newSubjectIds = selectedSubjects.filter(id => !existingSubjectIds.includes(id.toString()));
+            // Then, enroll the selected subjects
+            if (selectedSubjects.length > 0) {
+                const response = await axios.post('/api/student/enrol', {
+                    StudentId: selectedStudent.id,
+                    SubjectIds: selectedSubjects.map(id => Number(id)) // Ensure IDs are numbers
+                });
 
-            if (newSubjectIds.length === 0) {
-                toast.info('No new subjects to enroll. The student is already enrolled in the selected subjects.');
-                return;
-            }
-
-            // Re-add selected subjects
-            const response = await axios.post('/api/student/enrol', {
-                StudentId: selectedStudent.id,
-                SubjectIds: newSubjectIds.map(id => Number(id)) // Ensure IDs are numbers
-            });
-
-            if (response.status === 201) {
-                toast.success('Student enrolled successfully!');
+                if (response.status === 201) {
+                    toast.success('Student enrollment updated successfully!');
+                    navigate('/students');
+                }
+            } else {
+                toast.success('All subjects removed successfully!');
                 navigate('/students');
             }
         } catch (error) {
-            console.error('Error enrolling student:', error);
-            if (error.response?.data?.includes('duplicate key value')) {
-                toast.error('Student is already enrolled in one or more of these subjects.');
-            } else if (error.response) {
-                toast.error(`Failed to enroll student: ${error.response.data.message || 'Unknown error'}`);
+            console.error('Error updating enrollment:', error);
+            if (error.response) {
+                toast.error(`Failed to update enrollment: ${error.response.data.message || 'Unknown error'}`);
             } else {
-                toast.error('Failed to enroll student. Please try again.');
+                toast.error('Failed to update enrollment. Please try again.');
             }
         }
     };
