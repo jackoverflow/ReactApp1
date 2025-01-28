@@ -201,10 +201,10 @@ const StudentList = () => {
                                     </button>
                                     <Link 
                                         to={`/studentsubjects/${student.id}`} 
-                                        className={`btn ${student.subjects ? 'btn-info' : 'btn-secondary'}`}
+                                        className={`btn ${student.subjectCount ? 'btn-info' : 'btn-secondary'}`}
                                         style={{ marginLeft: '5px' }}
                                         onClick={(e) => {
-                                            if (!student.subjects) {
+                                            if (student.subjectCount === 0) {
                                                 e.preventDefault(); // Prevent navigation if no subjects
                                             }
                                         }}
