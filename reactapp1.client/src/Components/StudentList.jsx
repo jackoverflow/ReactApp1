@@ -221,6 +221,9 @@ const StudentList = () => {
                     )}
                 </tbody>
             </table>
+            <div className="total-students" style={{ marginTop: '10px' }}>
+                <p>Total Students: {students.length}</p> {/* Display total number of students */}
+            </div>
             <div className="pagination">
                 {Array.from({ length: totalPages }, (_, index) => (
                     <a 
