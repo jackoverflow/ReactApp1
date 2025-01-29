@@ -68,13 +68,13 @@ namespace ReactApp1.Server.Controllers
 
     public class LoginRequest
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public required string Username { get; set; }
+        public required string Password { get; set; }
     }
 
     public class RegisterRequest
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public required string Username { get; set; }
+        public required string Password { get; set; }
     }
 }
