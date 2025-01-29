@@ -222,7 +222,7 @@ const StudentList = () => {
                 </tbody>
             </table>
             <div className="total-students" style={{ marginTop: '10px' }}>
-                <p>Total Students: <strong>{students.length}</strong></p> {/* Display total number of students */}
+                <p><strong>Total Students:</strong> {students.length}</p> {/* Display total number of students */}
             </div>
             <div className="pagination">
                 {Array.from({ length: totalPages }, (_, index) => (
