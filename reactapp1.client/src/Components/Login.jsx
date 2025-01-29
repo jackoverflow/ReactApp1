@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from '../axiosConfig';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 const Login = () => {
@@ -62,6 +62,9 @@ const Login = () => {
                                     Login
                                 </button>
                             </form>
+                            <p>
+                                Don't have an account? <Link to="/register">Register here</Link>
+                            </p>
                         </div>
                     </div>
                 </div>

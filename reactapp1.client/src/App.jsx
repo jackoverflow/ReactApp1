@@ -9,6 +9,7 @@ import EnrolStudent from './Components/EnrolStudent';
 import StudentSubjects from './Components/StudentSubjects';
 import EditSubject from './Components/EditSubject';
 import Login from './Components/Login';
+import Register from './Components/Register';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -26,6 +27,7 @@ const App = () => {
         <Router>
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route
                     path="/students"
                     element={
