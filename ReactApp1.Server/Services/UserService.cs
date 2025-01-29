@@ -23,7 +23,7 @@ namespace ReactApp1.Server.Services
             _configuration = configuration;
         }
 
-        public async Task<User> ValidateUser(string username, string password)
+        public async Task<User?> ValidateUser(string username, string password)
         {
             // Query to get the user by username
             var query = "SELECT * FROM Users WHERE Username = @Username";
@@ -45,8 +45,9 @@ namespace ReactApp1.Server.Services
 
         public string GenerateToken(User user)
         {
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+            var secretKey = _configuration["JwtSettings:SecretKey"] ?? 
+                throw new InvalidOperationException("JWT SecretKey is not configured");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
@@ -60,7 +61,7 @@ namespace ReactApp1.Server.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<User> GetUserByUsername(string username)
+        public async Task<User?> GetUserByUsername(string username)
         {
             var query = "SELECT * FROM Users WHERE Username = @Username";
             return await _dbConnection.QuerySingleOrDefaultAsync<User>(query, new { Username = username });

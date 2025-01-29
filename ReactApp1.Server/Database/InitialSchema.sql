@@ -32,10 +32,8 @@ CREATE TABLE public.StudentSubject (
 );
 
 -- Create Users table
-CREATE TABLE public.Users (
+CREATE TABLE IF NOT EXISTS public.Users (
     Id SERIAL PRIMARY KEY,
-    Username VARCHAR(100) NOT NULL UNIQUE,
-    PasswordHash VARCHAR(255) NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL
 );

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using ReactApp1.Server.Models;
 using System.Threading.Tasks;
 using BCrypt.Net;
+using ReactApp1.Server.Services;
 
 namespace ReactApp1.Server.Controllers
 {

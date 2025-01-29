@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
 using ReactApp1.Server.Models;
 
-public interface IUserService
+namespace ReactApp1.Server.Services
 {
-    Task<User> ValidateUser(string username, string password);
-    Task<User> GetUserByUsername(string username);
-    Task CreateUser(User user);
-    string GenerateToken(User user);
+    public interface IUserService
+    {
+        Task<User> ValidateUser(string username, string password);
+        Task<User> GetUserByUsername(string username);
+        Task CreateUser(User user);
+        string GenerateToken(User user);
+    }
 } 

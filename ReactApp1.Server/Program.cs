@@ -4,12 +4,17 @@ using System.IO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using ReactApp1.Server.Services;
+using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IDbConnection>(db => 
+    new NpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IUserService, UserService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
