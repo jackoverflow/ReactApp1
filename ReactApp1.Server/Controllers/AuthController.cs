@@ -6,47 +6,75 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using ReactApp1.Server.Models;
+using System.Threading.Tasks;
+using BCrypt.Net;
 
-[Route("api/[controller]")]
-[ApiController]
-public class AuthController : ControllerBase
+namespace ReactApp1.Server.Controllers
 {
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<AuthController> _logger;
-
-    public AuthController(IConfiguration configuration, ILogger<AuthController> logger)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
     {
-        _configuration = configuration;
-        _logger = logger;
-    }
+        private readonly IUserService _userService;
+        private readonly ILogger<AuthController> _logger;
 
-    [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
-    {
-        _logger.LogInformation("Login attempt for user: {Username}", request.Username);
-        
-        if (request.Username == "admin" && request.Password == "password")
+        public AuthController(IUserService userService, ILogger<AuthController> logger)
         {
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("YourSuperSecretKeyHere12345!@#$%"));
-            
-            var token = new JwtSecurityToken(
-                issuer: "YourIssuer",
-                audience: "YourAudience",
-                claims: new[] { new Claim(ClaimTypes.Name, request.Username) },
-                expires: DateTime.UtcNow.AddDays(1),
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-            );
-
-            return Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
+            _userService = userService;
+            _logger = logger;
         }
 
-        return Unauthorized();
-    }
-}
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            _logger.LogInformation("Login attempt for user: {Username}", request.Username);
+            
+            var user = await _userService.ValidateUser(request.Username, request.Password);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Invalid username or password" });
+            }
 
-public class LoginRequest
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
+            var token = _userService.GenerateToken(user);
+            return Ok(new { token });
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        {
+            // Check if the username already exists
+            var existingUser = await _userService.GetUserByUsername(request.Username);
+            if (existingUser != null)
+            {
+                return BadRequest(new { message = "Username already exists." });
+            }
+
+            // Hash the password
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            // Create a new user
+            var newUser = new User
+            {
+                Username = request.Username,
+                PasswordHash = passwordHash
+            };
+
+            await _userService.CreateUser(newUser); // Implement this method in your user service
+
+            return Ok(new { message = "User registered successfully." });
+        }
+    }
+
+    public class LoginRequest
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class RegisterRequest
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
 }

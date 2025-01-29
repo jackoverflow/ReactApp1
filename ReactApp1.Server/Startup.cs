@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Data;
+using Npgsql;
+using ReactApp1.Server.Services;
 
 namespace ReactApp1.Server
 {
@@ -20,6 +23,9 @@ namespace ReactApp1.Server
             });
             // No DbContext registration needed since using Dapper
             // Other service registrations...
+
+            services.AddScoped<IDbConnection>(db => new NpgsqlConnection(Configuration.GetConnectionString("DefaultConnection"))); // Example for PostgreSQL
+            services.AddScoped<IUserService, UserService>();
 
             // Configure JWT authentication
             services.AddAuthentication(options =>

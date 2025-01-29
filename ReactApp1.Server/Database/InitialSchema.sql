@@ -4,6 +4,7 @@
 DROP TABLE IF EXISTS public.StudentSubject;
 DROP TABLE IF EXISTS public.Subjects;
 DROP TABLE IF EXISTS public.Students;
+DROP TABLE IF EXISTS public.Users;
 
 -- Create Students table
 CREATE TABLE public.Students (
@@ -28,4 +29,13 @@ CREATE TABLE public.StudentSubject (
     PRIMARY KEY (StudentId, SubjectId),
     FOREIGN KEY (StudentId) REFERENCES public.Students(Id) ON DELETE CASCADE,
     FOREIGN KEY (SubjectId) REFERENCES public.Subjects(Id) ON DELETE CASCADE
+);
+
+-- Create Users table
+CREATE TABLE public.Users (
+    Id SERIAL PRIMARY KEY,
+    Username VARCHAR(100) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
