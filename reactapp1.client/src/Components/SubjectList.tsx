@@ -47,8 +47,14 @@ const SubjectList = () => {
         subject.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleEdit = (id: number) => {
-        navigate(`/editsubject/${id}`);
+    const handleEdit = async (id: number) => {
+        try {
+            // Navigate to the edit page with the subject ID
+            navigate(`/editsubject/${id}`);
+        } catch (error) {
+            console.error('Error navigating to edit page:', error);
+            toast.error('Failed to navigate to edit page.');
+        }
     };
 
     const handleDelete = async (id: number) => {

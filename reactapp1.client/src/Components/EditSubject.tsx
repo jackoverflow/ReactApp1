@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+
+interface Subject {
+    id: number;
+    shortName: string;
+    description: string;
+}
 
 const EditSubject = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [subject, setSubject] = useState({ shortName: '', description: '' });
+    const [subject, setSubject] = useState<Subject>({ id: 0, shortName: '', description: '' });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchSubject = async () => {
             try {
-                const response = await axios.get(`http://localhost:5077/api/student/subject/${id}`);
+                const response = await axios.get(`/api/student/subject/${id}`);
                 setSubject(response.data);
-                setLoading(false);
             } catch (error) {
                 console.error('Error fetching subject:', error);
                 toast.error('Failed to fetch subject details.');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -32,7 +39,7 @@ const EditSubject = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:5077/api/student/subject/${id}`, subject);
+            await axios.put(`/api/student/subject/${id}`, subject);
             toast.success('Subject updated successfully!');
             navigate('/subjects');
         } catch (error) {
@@ -71,14 +78,16 @@ const EditSubject = () => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">Update Subject</button>
-                <button 
-                    type="button" 
-                    className="btn btn-secondary" 
-                    onClick={() => navigate('/students')}
-                >
-                    Back to List
-                </button>
+                <div className="mt-3">
+                    <button type="submit" className="btn btn-primary me-2">Update Subject</button>
+                    <button 
+                        type="button" 
+                        className="btn btn-secondary" 
+                        onClick={() => navigate('/subjects')}
+                    >
+                        Back to List
+                    </button>
+                </div>
             </form>
         </div>
     );

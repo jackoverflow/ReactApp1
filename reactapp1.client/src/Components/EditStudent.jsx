@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axios from '../axiosConfig';
 import { toast } from 'react-hot-toast';
 import './StudentList.css';
 
@@ -14,14 +14,11 @@ const EditStudent = () => {
         birthDate: ''
     });
 
-    // Fetch student data
     useEffect(() => {
         const fetchStudent = async () => {
             try {
-                console.log('Fetching student with ID:', id);
-                const response = await axios.get(`http://localhost:5077/api/student/${id}`);
+                const response = await axios.get(`/api/student/${id}`);
                 const studentData = response.data;
-                console.log('Received student data:', studentData);
 
                 // Format the date when setting the student data
                 const formattedDate = studentData.dateOfBirth ? 
@@ -54,8 +51,7 @@ const EditStudent = () => {
                 dateOfBirth: student.birthDate
             };
             
-            console.log('Sending update data:', studentData);
-            const response = await axios.put(`http://localhost:5077/api/student/${id}`, studentData);
+            await axios.put(`/api/student/${id}`, studentData);
             toast.success('Student updated successfully!');
             navigate('/students');
         } catch (error) {
@@ -63,8 +59,6 @@ const EditStudent = () => {
             toast.error('Failed to update student.');
         }
     };
-
-    console.log('Editing student with ID:', id);
 
     return (
         <div className="container mt-4">
@@ -81,7 +75,7 @@ const EditStudent = () => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        value={student.firstname || ''}
+                                        value={student.firstname}
                                         onChange={(e) => setStudent({ ...student, firstname: e.target.value })}
                                         required
                                     />
@@ -91,7 +85,7 @@ const EditStudent = () => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        value={student.lastname || ''}
+                                        value={student.lastname}
                                         onChange={(e) => setStudent({ ...student, lastname: e.target.value })}
                                         required
                                     />
@@ -101,7 +95,7 @@ const EditStudent = () => {
                                     <input
                                         type="date"
                                         className="form-control"
-                                        value={student.birthDate || ''}
+                                        value={student.birthDate}
                                         onChange={(e) => setStudent({ ...student, birthDate: e.target.value })}
                                         required
                                     />
