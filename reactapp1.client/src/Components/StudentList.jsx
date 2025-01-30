@@ -15,6 +15,7 @@ const StudentList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        console.log('Fetching students...');
         const fetchStudents = async () => {
             try {
                 const token = localStorage.getItem('token');
