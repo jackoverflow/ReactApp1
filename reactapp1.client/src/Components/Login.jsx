@@ -19,11 +19,12 @@ const Login = () => {
             
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
-                toast.success('Login successful!');
-                navigate('/students');
+                setTimeout(() => {
+                    navigate('/students');
+                }, 100);
             }
         } catch (error) {
-            console.error('Login failed:', error.response?.data || error.message);
+            console.error('Login failed:', error);
             toast.error('Invalid username or password');
         }
     };
