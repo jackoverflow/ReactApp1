@@ -25,8 +25,8 @@ namespace ReactApp1.Server.Services
 
         public async Task<User?> ValidateUser(string username, string password)
         {
-            // Query to get the user by username
-            var query = "SELECT * FROM Users WHERE Username = @Username";
+            // Update the query to specify the public schema
+            var query = "SELECT * FROM public.Users WHERE Username = @Username"; 
             var user = await _dbConnection.QuerySingleOrDefaultAsync<User>(query, new { Username = username });
 
             // Check if user exists and verify password
