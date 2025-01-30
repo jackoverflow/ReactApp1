@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 
 namespace ReactApp1.Server.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class StudentController : ControllerBase
 {
     private readonly IConfiguration _configuration;

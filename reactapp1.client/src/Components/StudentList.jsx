@@ -17,44 +17,22 @@ const StudentList = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                setLoading(true);
-                const response = await axios.get('/api/student/search', {
-                    params: {
-                        searchTerm,
-                        pageNumber: currentPage,
-                        pageSize
+                const token = localStorage.getItem('token');
+                console.log('Token being used:', token); // Debug token
+
+                const response = await axios.get('/api/student', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
                     }
                 });
-
-                // Fetch subject counts for each student
-                const studentsWithSubjects = await Promise.all(
-                    response.data.map(async (student) => {
-                        const subjectsResponse = await axios.get(`/api/student/${student.id}/subjects`);
-                        return {
-                            ...student,
-                            subjectCount: subjectsResponse.data.subjects ? subjectsResponse.data.subjects.length : 0
-                        };
-                    })
-                );
-
-                setStudents(studentsWithSubjects);
-                const totalResponse = await axios.get('/api/student/count');
-                setTotalStudents(totalResponse.data);
+                setStudents(response.data);
             } catch (error) {
                 console.error('Error fetching students:', error);
-                if (error.response?.status === 401) {
-                    navigate('/login');
-                } else {
-                    toast.error('Failed to fetch students.');
-                }
-                setStudents([]);
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchStudents();
-    }, [currentPage, searchTerm, navigate]);
+    }, []);
 
     const totalPages = Math.ceil(totalStudents / pageSize); // Calculate total pages
 
