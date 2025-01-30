@@ -63,13 +63,13 @@ namespace ReactApp1.Server.Services
 
         public async Task<User?> GetUserByUsername(string username)
         {
-            var query = "SELECT * FROM Users WHERE Username = @Username";
+            var query = "SELECT * FROM public.Users WHERE Username = @Username";
             return await _dbConnection.QuerySingleOrDefaultAsync<User>(query, new { Username = username });
         }
 
         public async Task CreateUser(User user)
         {
-            var query = "INSERT INTO Users (Username, PasswordHash) VALUES (@Username, @PasswordHash)";
+            var query = "INSERT INTO public.Users (Username, PasswordHash) VALUES (@Username, @PasswordHash)";
             await _dbConnection.ExecuteAsync(query, new { Username = user.Username, PasswordHash = user.PasswordHash });
         }
     }
