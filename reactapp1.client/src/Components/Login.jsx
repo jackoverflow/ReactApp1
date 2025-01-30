@@ -19,6 +19,7 @@ const Login = () => {
             
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
+                toast.success('Login successful!');
                 setTimeout(() => {
                     navigate('/students');
                 }, 100);
