@@ -43,18 +43,15 @@ namespace ReactApp1.Server
             })
             .AddJwtBearer(options =>
             {
-                var secretKey = Configuration["JwtSettings:SecretKey"] ?? 
-                    throw new InvalidOperationException("JWT SecretKey is not configured");
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["JwtSettings:Issuer"], // Use configuration
-                    ValidAudience = Configuration["JwtSettings:Audience"], // Use configuration
-                    IssuerSigningKey = key
+                    ValidIssuer = Configuration["JwtSettings:Issuer"],
+                    ValidAudience = Configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSettings:SecretKey"]))
                 };
             });
         }
